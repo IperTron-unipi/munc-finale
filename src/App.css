@@ -30,3 +30,10 @@ button.link {
   text-decoration: underline;
   cursor: pointer;
 }
+
+/* Il codice partita si legge ad alta voce a un tavolo: grande e spaziato. */
+.codice {
+  font-family: monospace;
+  font-size: 1.6rem;
+  letter-spacing: 0.2em;
+}

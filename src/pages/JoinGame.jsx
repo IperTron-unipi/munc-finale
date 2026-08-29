@@ -1,7 +1,98 @@
+import { useState } from 'react'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
+import {
+  unisciti,
+  messaggioErroreGioco,
+  LUNGHEZZA_NOME_MAX,
+} from '../lib/games'
+import {
+  normalizzaCodice,
+  codiceValido,
+  LUNGHEZZA_CODICE,
+} from '../lib/gameCode'
+
 function JoinGame() {
+  const { user } = useAuth()
+  const navigate = useNavigate()
+
+  // Chi arriva da /game/XXXXXX senza essere in partita trova il campo
+  // già compilato: il codice ce l'aveva davanti, ridigitarlo è solo attrito.
+  const [parametri] = useSearchParams()
+  const [codice, setCodice] = useState(() =>
+    normalizzaCodice(parametri.get('codice') ?? ''),
+  )                                             // già normalizzato: vedi onChange
+  const [nome, setNome] = useState('')
+  const [error, setError] = useState(null)
+  const [submitting, setSubmitting] = useState(false)
+
+  async function handleSubmit(event) {
+    event.preventDefault()
+    setError(null)
+
+    if (!codiceValido(codice)) {
+      setError(`Il codice ha ${LUNGHEZZA_CODICE} caratteri`)
+      return
+    }
+
+    const nomePulito = nome.trim()
+    if (nomePulito === '') {
+      setError('Scrivi il nome del personaggio')
+      return
+    }
+
+    setSubmitting(true)
+    try {
+      await unisciti(codice, user.uid, nomePulito)
+      navigate(`/game/${codice}`, { replace: true })
+    } catch (err) {
+      setError(messaggioErroreGioco(err.code))
+      setSubmitting(false)
+    }
+  }
+
   return (
-    <section>
-      {/* Form codice partita + nome personaggio. Verifica esistenza game, crea player. Redirect a /game/:gameId */}
+    <section className="colonna">
+      <h1>Unisciti a una partita</h1>
+
+      <form className="colonna" onSubmit={handleSubmit}>
+        <label htmlFor="codice">Codice partita</label>
+        {/* La normalizzazione è nell'onChange, non al submit: chi digita
+            in minuscolo vede il campo correggersi mentre scrive. */}
+        <input
+          id="codice"
+          type="text"
+          value={codice}
+          onChange={(e) => setCodice(normalizzaCodice(e.target.value))}
+          maxLength={LUNGHEZZA_CODICE}
+          autoComplete="off"
+          autoCapitalize="characters"
+          required
+        />
+
+        <label htmlFor="nome">Nome del personaggio</label>
+        <input
+          id="nome"
+          type="text"
+          value={nome}
+          onChange={(e) => setNome(e.target.value)}
+          maxLength={LUNGHEZZA_NOME_MAX}
+          autoComplete="off"
+          required
+        />
+
+        {error && (
+          <p className="errore" role="alert">
+            {error}
+          </p>
+        )}
+
+        <button type="submit" disabled={submitting}>
+          {submitting ? 'Attendi…' : 'Entra'}
+        </button>
+      </form>
+
+      <Link to="/">Torna indietro</Link>
     </section>
   )
 }
