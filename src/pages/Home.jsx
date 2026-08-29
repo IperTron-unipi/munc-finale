@@ -1,7 +1,29 @@
+import { Link } from 'react-router-dom'
+import { signOut } from 'firebase/auth'
+import { auth } from '../lib/firebase'
+import { useAuth } from '../context/AuthContext'
+
 function Home() {
+  const { user } = useAuth()
+
+  // Dopo signOut non serve navigare: RequireAuth rimanda a /login da solo.
+  function esci() {
+    signOut(auth)
+  }
+
   return (
-    <section>
-      {/* Bottoni: "Crea partita" / "Unisciti a una partita" */}
+    <section className="colonna">
+      <h1>Munchkin Tracker</h1>
+
+      <p>
+        {user.email}{' '}
+        <button type="button" className="link" onClick={esci}>
+          Esci
+        </button>
+      </p>
+
+      <Link to="/create">Crea partita</Link>
+      <Link to="/join">Unisciti a una partita</Link>
     </section>
   )
 }
