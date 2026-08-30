@@ -97,7 +97,12 @@ src/
     AvvisoNotifiche.jsx    il bottone che chiede il permesso
   pages/                   Login, Home, CreateGame, JoinGame, Game
 public/
-  sw.js                    service worker: per ora solo showNotification
+  sw.js                    service worker: cache, pagina offline, notifica
+  manifest.webmanifest     nome, icone, display standalone
+  regolamento.html         regolamento, e ripiego quando manca la rete
+  icons/                   192, 512, maskable 512, apple touch, favicon
+scripts/
+  genera-icone.mjs         rigenera i PNG delle icone, senza dipendenze
 firestore.rules
 ```
 
@@ -125,8 +130,9 @@ Il codice come id significa che unirsi a una partita è un `getDoc` diretto: nes
 | `/create` | nome del personaggio → nuova partita |
 | `/join` | codice + nome del personaggio |
 | `/game/:gameId` | sala d'attesa, board o vittoria, secondo lo `status` |
+| `/regolamento.html` | pagina statica, fuori dal router: le regole di Munchkin |
 
-Tutte tranne `/login` stanno dietro `RequireAuth`.
+Tutte tranne `/login` stanno dietro `RequireAuth`. Il regolamento è un file in `public/`, non una route: si apre con un `<a>` e si legge anche senza aver fatto l'accesso.
 
 ## Stato del progetto
 
@@ -137,10 +143,16 @@ Tutte tranne `/login` stanno dietro `RequireAuth`.
 | 3. Sala d'attesa in tempo reale | fatta |
 | 4. Board di gioco | fatta |
 | 5. Vittoria e notifica | fatta |
-| 6. PWA installabile e offline | da fare |
+| 6. PWA installabile e offline | fatta |
 | 7. Deploy | da fare |
 
 ## Note
+
+**L'app è installabile e ha un solo service worker.** Manifest e worker sono scritti a mano, senza `vite-plugin-pwa`: il worker delle notifiche esisteva già, e un secondo worker sullo stesso `scope` non si affiancherebbe al primo — lo sostituirebbe. Un file solo evita il problema in partenza.
+
+**Senza rete si vede il regolamento, non l'app.** Le aperture di pagina passano prima dalla rete e ripiegano su `regolamento.html` — la stessa pagina che la home collega come regolamento, così il testo esiste in una copia sola. È una scelta: un tracker che prende ogni dato da Firestore, servito dalla cache a linea assente, sarebbe una schermata di caricamento infinita. JavaScript, CSS e icone invece si servono dalla cache, perché il loro nome contiene l'hash del contenuto e non può diventare stantio.
+
+**Se cambi `regolamento.html`, il manifest o le icone, alza la versione in `public/sw.js`.** Quei file sono precaricati e non hanno l'hash nel nome: senza il cambio di `CACHE`, chi ha già visitato il sito continua a vedere la versione vecchia.
 
 **Le notifiche sono locali, non push.** Il piano gratuito di Firebase non include Cloud Functions, e una push FCM va inviata da un backend autenticato — mai dal client. Ogni giocatore ha già un listener sulla partita: quando lo stato passa a `finished`, il client mostra una notifica tramite il service worker. Arriva solo ad app aperta o in background, e su iOS solo se la PWA è installata dalla schermata Home. Il permesso si chiede con un bottone all'ingresso in partita, non all'apertura dell'app: un permesso negato non si può ritirare.
 

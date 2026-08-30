@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#b91c1c" />
+    <title>Regolamento — Munchkin Tracker</title>
+    <!-- Due mestieri, una copia sola del testo: il regolamento che si apre
+         dalla home, e il ripiego che il service worker serve quando una
+         pagina non si carica. Tutto in linea, perché da ripiego non può
+         dipendere da file che vadano scaricati. -->
+    <style>
+      body {
+        margin: 0;
+        padding: 1rem;
+        font-family: system-ui, 'Segoe UI', Roboto, Arial, sans-serif;
+        line-height: 1.5;
+        max-width: 34rem;
+        margin-inline: auto;
+      }
+
+      .avviso {
+        border: 2px solid #b91c1c;
+        padding: 0.75rem 1rem;
+        margin-bottom: 1.5rem;
+      }
+
+      /* A farsi vedere ci pensa il riquadro: il titolo della pagina è il regolamento. */
+      .avviso .occhiello {
+        margin: 0 0 0.5rem;
+        font-size: 0.8rem;
+        font-weight: bold;
+        color: #b91c1c;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+      }
+
+      .avviso p {
+        margin: 0.25rem 0 0;
+      }
+
+      button {
+        min-height: 44px;
+        margin-top: 0.75rem;
+        padding: 0 1rem;
+        font-size: 1rem;
+      }
+
+      h2 {
+        margin-top: 1.75rem;
+        border-bottom: 1px solid #ccc;
+        padding-bottom: 0.25rem;
+      }
+
+      .marchio {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-weight: bold;
+      }
+
+      .marchio img {
+        width: 32px;
+        height: 32px;
+      }
+
+      dt {
+        font-weight: bold;
+        margin-top: 0.5rem;
+      }
+
+      dd {
+        margin: 0 0 0 1rem;
+      }
+
+      footer {
+        margin-top: 2rem;
+        font-size: 0.8rem;
+        color: #555;
+      }
+    </style>
+  </head>
+  <body>
+    <p class="marchio">
+      <img src="/icons/icon-192.png" alt="" />
+      Munchkin Tracker
+    </p>
+
+    <div class="avviso" id="avviso" hidden>
+      <p class="occhiello">Nessuna connessione</p>
+      <p>
+        Il tracker tiene allineati i telefoni del tavolo passando da internet:
+        senza rete non può né leggere né scrivere la partita.
+      </p>
+      <p>
+        Nel frattempo, qui sotto c'è il regolamento. La partita in corso non è
+        persa: riappare da sola appena torna la linea.
+      </p>
+      <button type="button" id="riprova">Riprova</button>
+    </div>
+
+    <h1>Il regolamento, in breve</h1>
+
+    <p>
+      Munchkin è un gioco di carte: si sfondano porte, si combattono mostri e si
+      sale di livello. Vince chi arriva per primo a <strong>livello 10</strong>.
+    </p>
+
+    <dl>
+      <dt>Il turno</dt>
+      <dd>
+        Sfondi la porta girando la prima carta del mazzo. Se esce un mostro lo
+        combatti subito. Se esce altro, lo tieni in mano e puoi saccheggiare la
+        stanza pescando una seconda carta coperta.
+      </dd>
+
+      <dt>Il combattimento</dt>
+      <dd>
+        Confronti la tua <strong>forza</strong> con quella del mostro. Se la
+        tua è più alta lo uccidi, prendi il tesoro e sali di un livello. In
+        caso di parità vince il mostro — a meno che tu non sia Combattente.
+      </dd>
+
+      <dt>La forza</dt>
+      <dd>
+        Livello più bonus degli oggetti equipaggiati. Il bonus non fa salire di
+        livello: serve solo a battere i mostri.
+      </dd>
+
+      <dt>Combattente</dt>
+      <dd>
+        Vale +1 in combattimento e vince i pareggi. Nel tracker è solo un
+        contrassegno: i conti li fate voi al tavolo.
+      </dd>
+
+      <dt>Se stai perdendo</dt>
+      <dd>
+        Puoi chiedere aiuto a un altro giocatore, offrendogli parte del tesoro,
+        oppure scappare tirando il dado. Se la fuga fallisce subisci le
+        conseguenze del mostro, che di solito costano un livello.
+      </dd>
+
+      <dt>La vittoria</dt>
+      <dd>
+        Il decimo livello si conquista solo uccidendo un mostro, non con un
+        tesoro o una carta bonus.
+      </dd>
+    </dl>
+
+    <h2>Le regole della casa</h2>
+    <p>
+      Il tracker registra il livello da 1 a 10 e il bonus da 0 in su, uno per
+      giocatore. Non risolve i combattimenti e non applica le carte: serve solo
+      a non dover ricordare a mente chi sta a che punto.
+    </p>
+
+    <p><a href="/">← Torna all'app</a></p>
+
+    <footer>
+      Munchkin Tracker — progetto per l'esame di Sviluppo Applicazioni Web,
+      Università di Pisa.
+    </footer>
+
+    <script>
+      const avviso = document.getElementById('avviso')
+
+      // Da ripiego il service worker serve questa pagina all'indirizzo che il
+      // browser stava aprendo: un percorso diverso dal proprio vuol dire che
+      // l'utente non l'ha chiesta. Più affidabile di `navigator.onLine`, che
+      // resta true col wifi acceso e il server irraggiungibile.
+      const ripiego = location.pathname !== '/regolamento.html'
+
+      // `onLine` serve per il caso opposto: regolamento aperto apposta, rete assente.
+      avviso.hidden = !ripiego && navigator.onLine
+
+      if (!avviso.hidden) document.title = 'Nessuna connessione — Munchkin Tracker'
+
+      // Da ripiego ricarica la pagina che volevi, non questa.
+      document.getElementById('riprova').addEventListener('click', () => {
+        location.reload()
+      })
+
+      // Il telefono sul tavolo rientra in partita da sé. Solo per chi è finito
+      // qui suo malgrado: a chi legge il regolamento non deve sparire.
+      if (ripiego) {
+        window.addEventListener('online', () => location.reload())
+      }
+    </script>
+  </body>
+</html>

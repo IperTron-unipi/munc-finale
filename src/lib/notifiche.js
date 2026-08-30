@@ -24,7 +24,7 @@ export function permessoNotifiche() {
 // Registra il worker all'avvio dell'app. Non chiede nessun permesso.
 export function registraServiceWorker() {
   if (!('serviceWorker' in navigator)) return
-  // Se la registrazione fallisce l'app continua senza notifiche.
+  // Se la registrazione fallisce l'app continua senza notifiche e senza cache.
   navigator.serviceWorker.register(PERCORSO_WORKER).catch(() => {})
 }
 

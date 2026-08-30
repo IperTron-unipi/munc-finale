@@ -5,8 +5,8 @@ import './index.css'
 import App from './App.jsx'
 import { registraServiceWorker } from './lib/notifiche'
 
-// Il worker si registra all'avvio, in silenzio: il permesso si chiede
-// dopo, all'ingresso in partita. Fuori da React per non rifarlo a ogni
+// Il worker si registra all'avvio, in silenzio: il permesso di notificare si
+// chiede dopo, all'ingresso in partita. Fuori da React per non rifarlo a ogni
 // montaggio, e due volte per via di StrictMode.
 registraServiceWorker()
 

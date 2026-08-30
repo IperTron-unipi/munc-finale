@@ -24,6 +24,9 @@ function Home() {
 
       <Link to="/create">Crea partita</Link>
       <Link to="/join">Unisciti a una partita</Link>
+
+      {/* File in public/, non una route: <Link> resterebbe dentro il router. */}
+      <a href="/regolamento.html">Regolamento</a>
     </section>
   )
 }
