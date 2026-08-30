@@ -10,9 +10,13 @@ Le app esistenti per Munchkin sono segnapunti locali: un solo dispositivo che pa
 
 ## Il gioco, in tre righe
 
-Ogni personaggio ha un nome, un livello da 1 a 10 e un flag **Combattente** (+1 invisibile in combattimento, vince anche i pareggi). Chi arriva a livello 10 vince, e tutti gli altri ricevono una notifica.
+Ogni personaggio ha un nome, due statistiche indipendenti — il **livello** da 1 a 10 e il **bonus** degli oggetti, che parte da 0 — e un flag **Combattente** (+1 invisibile in combattimento, vince anche i pareggi).
 
-Il flag è solo un booleano: il combattimento lo risolvono i giocatori al tavolo, l'app non calcola nulla.
+**Si vince arrivando a livello 10.** Il bonus non fa salire di livello: si somma al livello per dare la **forza in combattimento**, che serve a battere i mostri e non a vincere la partita.
+
+Chi arriva a livello 10 conferma la vittoria due volte, la partita si chiude e tutti gli altri ricevono una notifica. Se non conferma, il livello torna a 9 e si continua.
+
+Il flag Combattente è solo un booleano: il combattimento lo risolvono i giocatori al tavolo, l'app non calcola nulla.
 
 ## Stack
 
@@ -102,7 +106,7 @@ games/{codice}                    il codice di 6 caratteri È l'id del documento
   hostUid, createdAt, winnerUid, winnerName
 
 games/{codice}/players/{uid}      l'uid dell'utente autenticato È l'id
-  name, level, isFighter, joinedAt
+  name, level, bonus, isFighter, joinedAt
 ```
 
 Il codice come id significa che unirsi a una partita è un `getDoc` diretto: nessuna query, nessun indice, e l'unicità la garantisce Firestore.
@@ -126,12 +130,12 @@ Tutte tranne `/login` stanno dietro `RequireAuth`.
 | 1. Autenticazione e route protette | fatta |
 | 2. Creare e unirsi a una partita | fatta |
 | 3. Sala d'attesa in tempo reale | fatta |
-| 4. Board di gioco | da fare |
+| 4. Board di gioco | fatta |
 | 5. Vittoria e notifica | da fare |
 | 6. PWA installabile e offline | da fare |
 | 7. Deploy | da fare |
 
-Le viste `playing` e `finished` sono ancora segnaposto.
+La vista `finished` è ancora un segnaposto: la schermata del vincitore è la Fase 5.
 
 ## Note
 

@@ -37,3 +37,90 @@ button.link {
   font-size: 1.6rem;
   letter-spacing: 0.2em;
 }
+
+/* ---- Tabellone di gioco ---- */
+
+.tabellone {
+  list-style: none;
+  padding: 0;
+}
+
+/* Una riga per personaggio. Il wrap serve sul telefono: sotto una certa
+   larghezza i comandi scendono sotto al nome invece di stringersi. */
+.giocatore {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #ccc;
+}
+
+/* La propria riga si deve trovare a colpo d'occhio in mezzo alle altre. */
+.giocatore.mio {
+  font-weight: bold;
+}
+
+.giocatore .nome {
+  flex: 1;
+}
+
+/* Il livello grande, bonus e forza in piccolo: il numero che fa vincere
+   è il livello, la forza si guarda solo quando si affronta un mostro. */
+.statistiche {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  white-space: nowrap;
+}
+
+.statistiche .livello {
+  font-family: monospace;
+  font-size: 1.6rem;
+}
+
+.statistiche .dettaglio {
+  font-size: 0.85rem;
+  color: #555;
+}
+
+.comandi {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* I due +/− vanno tenuti insieme e distinti fra loro, altrimenti quattro
+   bottoni in fila sono quattro modi di sbagliare statistica. */
+.comandi .gruppo {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.comandi .etichetta {
+  font-size: 0.85rem;
+  font-weight: normal;
+}
+
+/* Si preme al tavolo, spesso di fretta e con una mano sola:
+   44px è il minimo che le linee guida touch danno per un bersaglio. */
+.comandi button {
+  min-width: 44px;
+  min-height: 44px;
+  font-size: 1.2rem;
+}
+
+/* La conferma di vittoria interrompe la lettura del tabellone: se passasse
+   inosservata, il giocatore resterebbe a 10 senza sapere perché. */
+.conferma {
+  border: 2px solid black;
+  padding: 0.75rem;
+  margin: 0.5rem 0;
+}
+
+.conferma button {
+  min-height: 44px;
+  margin-right: 0.5rem;
+}
