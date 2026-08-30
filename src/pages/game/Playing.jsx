@@ -17,9 +17,8 @@ function Playing({ gameId, partita, giocatori }) {
   const { user } = useAuth()
   const [error, setError] = useState(null)
 
-  // Il secondo passo della conferma di vittoria. Il primo non è uno stato:
-  // si deduce dal livello, così un refresh a 10 ritrova la domanda invece
-  // di lasciare il giocatore in un vicolo cieco con il + disabilitato.
+  // Solo il secondo passo della conferma è uno stato: il primo si deduce
+  // dal livello, così un refresh a 10 ritrova la domanda.
   const [secondaConferma, setSecondaConferma] = useState(false)
 
   // C'è di sicuro: Game.jsx non monta questa vista se non sei fra i giocatori.
@@ -27,12 +26,9 @@ function Playing({ gameId, partita, giocatori }) {
   const mioLivello = io.level
   const mioBonus = io.bonus ?? BONUS_MIN
 
-  // Nessun `submitting`, e nessun await che blocchi l'interfaccia.
-  // Firestore applica la scrittura alla copia locale prima di mandarla al
-  // server, quindi onSnapshot rimanda indietro il valore nuovo subito: il
-  // numero a schermo cambia al tocco, non quando il server risponde.
-  // Se la scrittura poi fallisce, lo snapshot torna indietro da solo e
-  // qui resta solo da mostrare il perché.
+  // Nessun `submitting`: Firestore aggiorna prima la copia locale, quindi
+  // il numero cambia al tocco. Se la scrittura fallisce lo snapshot torna
+  // indietro da solo, e qui resta da mostrare il perché.
   function mostraErrore(err) {
     setError(messaggioErroreGioco(err.code))
   }
@@ -61,9 +57,7 @@ function Playing({ gameId, partita, giocatori }) {
     dichiaraVittoria(gameId, user.uid, io.name).catch(mostraErrore)
   }
 
-  // Un "no" a una qualsiasi delle due domande riporta il livello a 9.
-  // Senza questa scrittura il livello resterebbe 10, la condizione
-  // sarebbe ancora vera e la domanda ricomparirebbe subito.
+  // Un "no" riporta il livello a 9: a 10 la domanda ricomparirebbe subito.
   function rifiutaVittoria() {
     setSecondaConferma(false)
     modificaLivello(-1)
@@ -83,9 +77,7 @@ function Playing({ gameId, partita, giocatori }) {
         </p>
       )}
 
-      {/* La domanda compare da sé appena il livello tocca il massimo, e
-          sparisce da sé se il giocatore scende con il −: è la stessa
-          condizione, letta dai dati e non da un click. */}
+      {/* La domanda compare e sparisce col livello, non con un click. */}
       {mioLivello === LIVELLO_MAX && (
         <div className="conferma">
           {secondaConferma ? (
@@ -118,9 +110,8 @@ function Playing({ gameId, partita, giocatori }) {
         </div>
       )}
 
-      {/* L'ordine è quello d'ingresso, lo stesso della lobby: una classifica
-          ordinata per livello farebbe saltare le righe sotto il dito mentre
-          si preme il +, ed è il momento peggiore per farle muovere. */}
+      {/* Ordine d'ingresso, come in lobby: ordinare per livello farebbe
+          saltare le righe sotto il dito mentre si preme il +. */}
       <ul className="tabellone">
         {giocatori.map((g) => {
           const sonoIo = g.uid === user.uid
@@ -135,9 +126,7 @@ function Playing({ gameId, partita, giocatori }) {
                 {g.isFighter && ' ⚔'}
               </span>
 
-              {/* Il livello è il numero che fa vincere, quindi è quello
-                  grande. Il totale è la forza in combattimento: si legge
-                  quando si affronta un mostro, non a ogni turno. */}
+              {/* Il livello grande perché è quello che fa vincere. */}
               <span className="statistiche">
                 <strong className="livello">Liv. {g.level}</strong>
                 <span className="dettaglio">

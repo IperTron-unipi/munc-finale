@@ -1,7 +1,9 @@
 import { Link, useParams } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { usePartita } from '../hooks/usePartita'
+import { useNotificaVittoria } from '../hooks/useNotificaVittoria'
 import { messaggioErroreGioco } from '../lib/games'
+import AvvisoNotifiche from '../components/AvvisoNotifiche'
 import Lobby from './game/Lobby'
 import Playing from './game/Playing'
 import Finished from './game/Finished'
@@ -10,6 +12,11 @@ function Game() {
   const { gameId } = useParams()
   const { user } = useAuth()
   const { partita, giocatori, loading, error } = usePartita(gameId)
+
+  // Qui e non dentro le viste: quando qualcuno vince si passa da `Playing`
+  // a `Finished`, e l'hook si smonterebbe proprio nel momento che deve
+  // riconoscere. Inoltre gli hook vanno chiamati prima dei return qui sotto.
+  useNotificaVittoria(gameId, partita, user.uid)
 
   if (loading) return <p className="stato">Caricamento…</p>
 
@@ -57,12 +64,17 @@ function Game() {
   const Vista = viste[partita.status] ?? Lobby
 
   return (
-    <Vista
-      gameId={gameId}
-      partita={partita}
-      giocatori={giocatori}
-      sonoHost={partita.hostUid === user.uid}
-    />
+    <>
+      {/* A partita finita non c'è più niente da annunciare. */}
+      {partita.status !== 'finished' && <AvvisoNotifiche />}
+
+      <Vista
+        gameId={gameId}
+        partita={partita}
+        giocatori={giocatori}
+        sonoHost={partita.hostUid === user.uid}
+      />
+    </>
   )
 }
 

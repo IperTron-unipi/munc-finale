@@ -21,7 +21,7 @@ form {
   color: red;
 }
 
-/* Perché si capisca che il cambio modalità è un link e non un bottone del form. */
+/* Perché si legga come un link, non come un bottone del form. */
 button.link {
   padding: 0;
   border: none;
@@ -45,8 +45,8 @@ button.link {
   padding: 0;
 }
 
-/* Una riga per personaggio. Il wrap serve sul telefono: sotto una certa
-   larghezza i comandi scendono sotto al nome invece di stringersi. */
+/* Una riga per personaggio. Il wrap fa scendere i comandi sotto al nome
+   sugli schermi stretti. */
 .giocatore {
   display: flex;
   flex-wrap: wrap;
@@ -65,8 +65,7 @@ button.link {
   flex: 1;
 }
 
-/* Il livello grande, bonus e forza in piccolo: il numero che fa vincere
-   è il livello, la forza si guarda solo quando si affronta un mostro. */
+/* Livello grande, bonus e forza in piccolo: è il livello che fa vincere. */
 .statistiche {
   display: flex;
   align-items: baseline;
@@ -91,8 +90,7 @@ button.link {
   gap: 0.5rem;
 }
 
-/* I due +/− vanno tenuti insieme e distinti fra loro, altrimenti quattro
-   bottoni in fila sono quattro modi di sbagliare statistica. */
+/* Ogni coppia +/− raggruppata, per non confondere le due statistiche. */
 .comandi .gruppo {
   display: flex;
   align-items: center;
@@ -104,16 +102,14 @@ button.link {
   font-weight: normal;
 }
 
-/* Si preme al tavolo, spesso di fretta e con una mano sola:
-   44px è il minimo che le linee guida touch danno per un bersaglio. */
+/* 44px: il minimo per un bersaglio touch. */
 .comandi button {
   min-width: 44px;
   min-height: 44px;
   font-size: 1.2rem;
 }
 
-/* La conferma di vittoria interrompe la lettura del tabellone: se passasse
-   inosservata, il giocatore resterebbe a 10 senza sapere perché. */
+/* La conferma di vittoria deve interrompere la lettura del tabellone. */
 .conferma {
   border: 2px solid black;
   padding: 0.75rem;
@@ -123,4 +119,58 @@ button.link {
 .conferma button {
   min-height: 44px;
   margin-right: 0.5rem;
+}
+
+/* ---- Avviso notifiche ---- */
+
+/* In cima alla partita, ma discreto: si deve poter ignorare. */
+.avviso {
+  border: 1px solid #999;
+  padding: 0.5rem 0.75rem;
+  margin: 0 0 0.5rem;
+  font-size: 0.9rem;
+}
+
+/* ---- Fine partita ---- */
+
+/* Chi ha vinto va letto da lontano: il telefono è in mezzo al tavolo. */
+.vittoria {
+  border: 2px solid black;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+
+.vittoria h1 {
+  margin: 0.25rem 0;
+}
+
+.vittoria .occhiello {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #555;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+/* Stesse righe del tabellone, solo in ordine di livello. */
+.classifica {
+  list-style: none;
+  padding: 0;
+  counter-reset: posizione;
+}
+
+.classifica .giocatore::before {
+  counter-increment: posizione;
+  content: counter(posizione) '.';
+  min-width: 1.5rem;
+  color: #555;
+}
+
+.classifica .vincitore {
+  font-weight: bold;
+}
+
+.classifica .vincitore .nome::after {
+  content: ' 🏆';
 }

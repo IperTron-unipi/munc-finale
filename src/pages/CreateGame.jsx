@@ -8,12 +8,12 @@ import {
 } from '../lib/games'
 
 function CreateGame() {
-  const { user } = useAuth()          // c'è di sicuro: la route sta dietro RequireAuth
+  const { user } = useAuth()          // c'è di sicuro: route dietro RequireAuth
   const navigate = useNavigate()
 
-  const [nome, setNome] = useState('')          // nome del personaggio, non dell'account
-  const [error, setError] = useState(null)      // messaggio da mostrare, null se non c'è nulla da dire
-  const [submitting, setSubmitting] = useState(false)  // true mentre la scrittura è in volo
+  const [nome, setNome] = useState('')      // del personaggio, non dell'account
+  const [error, setError] = useState(null)  // null se non c'è niente da dire
+  const [submitting, setSubmitting] = useState(false)  // scrittura in volo
 
   async function handleSubmit(event) {
     event.preventDefault()
@@ -28,15 +28,14 @@ function CreateGame() {
     setSubmitting(true)
     try {
       const codice = await creaPartita(user.uid, nomePulito)
-      // replace: senza, il tasto "indietro" tornerebbe su questo form
-      // e un secondo invio creerebbe una partita in più.
+      // replace: senza, il tasto "indietro" tornerebbe qui e un secondo
+      // invio creerebbe una partita in più.
       navigate(`/game/${codice}`, { replace: true })
     } catch (err) {
       setError(messaggioErroreGioco(err.code))
       setSubmitting(false)
     }
-    // Nessun finally: se è andata bene il componente è già smontato,
-    // e scrivere su uno stato smontato non serve a niente.
+    // Nessun finally: se è andata bene il componente è già smontato.
   }
 
   return (

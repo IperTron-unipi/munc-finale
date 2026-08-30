@@ -84,15 +84,20 @@ npm run preview   # anteprima della build
 ```
 src/
   lib/
-    firebase.js       app, auth, db
-    gameCode.js       genera e normalizza il codice partita
-    games.js          le scritture su Firestore
-  context/            AuthProvider: onAuthStateChanged → { user, loading }
+    firebase.js            app, auth, db
+    gameCode.js            genera e normalizza il codice partita
+    games.js               le scritture su Firestore
+    notifiche.js           permesso e notifica locale
+  context/                 AuthProvider: onAuthStateChanged → { user, loading }
   hooks/
-    usePartita.js     i due onSnapshot di una partita
+    usePartita.js          i due onSnapshot di una partita
+    useNotificaVittoria.js notifica alla transizione a finished
   components/
-    RequireAuth.jsx   la guardia delle route protette
-  pages/              Login, Home, CreateGame, JoinGame, Game
+    RequireAuth.jsx        la guardia delle route protette
+    AvvisoNotifiche.jsx    il bottone che chiede il permesso
+  pages/                   Login, Home, CreateGame, JoinGame, Game
+public/
+  sw.js                    service worker: per ora solo showNotification
 firestore.rules
 ```
 
@@ -131,15 +136,13 @@ Tutte tranne `/login` stanno dietro `RequireAuth`.
 | 2. Creare e unirsi a una partita | fatta |
 | 3. Sala d'attesa in tempo reale | fatta |
 | 4. Board di gioco | fatta |
-| 5. Vittoria e notifica | da fare |
+| 5. Vittoria e notifica | fatta |
 | 6. PWA installabile e offline | da fare |
 | 7. Deploy | da fare |
 
-La vista `finished` è ancora un segnaposto: la schermata del vincitore è la Fase 5.
-
 ## Note
 
-**Le notifiche sono locali, non push.** Il piano gratuito di Firebase non include Cloud Functions, e una push FCM va inviata da un backend autenticato — mai dal client. Ogni giocatore ha già un listener sulla partita: quando lo stato passa a `finished`, il client mostra una notifica tramite il service worker. Arriva solo ad app aperta o in background, e su iOS solo se la PWA è installata dalla schermata Home.
+**Le notifiche sono locali, non push.** Il piano gratuito di Firebase non include Cloud Functions, e una push FCM va inviata da un backend autenticato — mai dal client. Ogni giocatore ha già un listener sulla partita: quando lo stato passa a `finished`, il client mostra una notifica tramite il service worker. Arriva solo ad app aperta o in background, e su iOS solo se la PWA è installata dalla schermata Home. Il permesso si chiede con un bottone all'ingresso in partita, non all'apertura dell'app: un permesso negato non si può ritirare.
 
 ---
 

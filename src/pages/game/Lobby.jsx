@@ -18,9 +18,8 @@ function Lobby({ gameId, partita, giocatori, sonoHost }) {
   }, [copiato])
 
   async function copiaCodice() {
-    // navigator.clipboard esiste solo in contesto sicuro: c'è su https
-    // e su localhost, non su http://192.168.x.x — cioè proprio quando
-    // si prova dal telefono in rete locale. Se manca, si legge a voce.
+    // navigator.clipboard c'è solo in contesto sicuro: manca su
+    // http://192.168.x.x, cioè proprio quando si prova dal telefono.
     if (!navigator.clipboard) return
     try {
       await navigator.clipboard.writeText(gameId)
@@ -35,9 +34,8 @@ function Lobby({ gameId, partita, giocatori, sonoHost }) {
     setSubmitting(true)
     try {
       await iniziaPartita(gameId)
-      // Nessun navigate: l'update cambia status, onSnapshot lo rimanda
-      // indietro e Game.jsx passa da solo alla vista Playing.
-      // Succede su tutti i dispositivi insieme, non solo su quello dell'host.
+      // Nessun navigate: l'update cambia status, onSnapshot lo rimanda a
+      // tutti e Game.jsx passa alla vista Playing su ogni dispositivo.
     } catch (err) {
       setError(messaggioErroreGioco(err.code))
       setSubmitting(false)

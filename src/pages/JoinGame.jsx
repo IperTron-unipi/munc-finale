@@ -17,11 +17,11 @@ function JoinGame() {
   const navigate = useNavigate()
 
   // Chi arriva da /game/XXXXXX senza essere in partita trova il campo
-  // già compilato: il codice ce l'aveva davanti, ridigitarlo è solo attrito.
+  // già compilato.
   const [parametri] = useSearchParams()
   const [codice, setCodice] = useState(() =>
     normalizzaCodice(parametri.get('codice') ?? ''),
-  )                                             // già normalizzato: vedi onChange
+  )                                         // già normalizzato: vedi onChange
   const [nome, setNome] = useState('')
   const [error, setError] = useState(null)
   const [submitting, setSubmitting] = useState(false)
@@ -57,8 +57,8 @@ function JoinGame() {
 
       <form className="colonna" onSubmit={handleSubmit}>
         <label htmlFor="codice">Codice partita</label>
-        {/* La normalizzazione è nell'onChange, non al submit: chi digita
-            in minuscolo vede il campo correggersi mentre scrive. */}
+        {/* Normalizzato nell'onChange e non al submit: il campo si
+            corregge mentre si scrive. */}
         <input
           id="codice"
           type="text"
