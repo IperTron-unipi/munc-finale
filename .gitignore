@@ -24,3 +24,8 @@ dist-ssr
 *.sln
 *.sw?
 altro
+
+# Firebase CLI
+.firebase
+firebase-debug.log
+firestore-debug.log

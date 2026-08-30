@@ -4,6 +4,8 @@ Segnapunti multiplayer per il gioco da tavolo [Munchkin](https://it.wikipedia.or
 
 Un giocatore crea la partita e condivide un codice di sei caratteri. Gli altri lo digitano dai loro telefoni ed entrano nella stessa sala d'attesa. Da lì livelli e stato del gioco restano allineati su tutti i dispositivi in tempo reale, senza che nessuno debba ricaricare niente.
 
+**L'app è online su https://munchkin-esame.web.app** — si apre dal browser e si installa dal telefono.
+
 ## Perché
 
 Le app esistenti per Munchkin sono segnapunti locali: un solo dispositivo che passa di mano in mano attorno al tavolo. Questa è multiplayer — ognuno tiene il proprio personaggio sul proprio telefono e vede quelli degli altri aggiornarsi da soli.
@@ -42,7 +44,7 @@ npm install
 
 **2. Configurazione Firebase**
 
-Copia `.env.schema` in `.env` e riempilo con i valori del tuo progetto. Li trovi in Console Firebase → Impostazioni progetto → Generali → Le tue app → Configurazione SDK.
+`.env.schema` va copiato in `.env` e riempito con i valori del proprio progetto. Stanno in Console Firebase → Impostazioni progetto → Generali → Le tue app → Configurazione SDK.
 
 ```bash
 cp .env.schema .env
@@ -59,7 +61,7 @@ La regione non si cambia dopo: si può solo cancellare il database e rifarlo.
 
 **4. Security Rules**
 
-Firestore in modalità produzione blocca ogni lettura e scrittura finché non pubblichi le regole. Incolla il contenuto di `firestore.rules` in Console Firebase → Firestore Database → Regole → Pubblica.
+Firestore in modalità produzione blocca ogni lettura e scrittura finché le regole non vengono pubblicate. Il contenuto di `firestore.rules` va incollato in Console Firebase → Firestore Database → Regole → Pubblica, oppure pubblicato dalla CLI con `npm run deploy:rules` (vedi [Pubblicare](#pubblicare)).
 
 Senza questo passo l'app si avvia ma ogni operazione fallisce con "Operazione non permessa".
 
@@ -78,6 +80,26 @@ npm run lint      # ESLint
 npm run build     # build di produzione in dist/
 npm run preview   # anteprima della build
 ```
+
+## Pubblicare
+
+Serve la CLI di Firebase, una volta sola per macchina.
+
+```bash
+npm i -g firebase-tools
+firebase login
+```
+
+Poi, da dentro il progetto:
+
+```bash
+npm run deploy          # build + Hosting + Security Rules
+npm run deploy:rules    # solo le regole, senza ricostruire
+```
+
+Il progetto di destinazione è in `.firebaserc`, e cosa pubblicare sta in `firebase.json`: la cartella `dist`, il rewrite che manda ogni rotta a `index.html`, e le intestazioni di cache.
+
+Va usato sempre `npm run deploy` e non `firebase deploy` da solo: il primo ricostruisce `dist`, il secondo pubblica quello che ci trova. Le variabili di `.env` finiscono nel bundle durante la build, quindi la build va fatta dove il `.env` è quello giusto — su Hosting non c'è niente da configurare.
 
 ## Struttura
 
@@ -103,7 +125,10 @@ public/
   icons/                   192, 512, maskable 512, apple touch, favicon
 scripts/
   genera-icone.mjs         rigenera i PNG delle icone, senza dipendenze
-firestore.rules
+firestore.rules            le Security Rules, pubblicate col deploy
+firestore.indexes.json     vuoto: non c'è una sola query da indicizzare
+firebase.json              cosa pubblicare, rewrite delle rotte, cache
+.firebaserc                a quale progetto Firebase parla la CLI
 ```
 
 Due confini tenuti ovunque: le pagine si occupano dell'interfaccia mentre `lib/` e `hooks/` si occupano dei dati — nessuna pagina importa `firebase/firestore` direttamente. E ogni vincolo che conta sta nelle Security Rules, perché il client non è una fonte affidabile.
@@ -134,6 +159,16 @@ Il codice come id significa che unirsi a una partita è un `getDoc` diretto: nes
 
 Tutte tranne `/login` stanno dietro `RequireAuth`. Il regolamento è un file in `public/`, non una route: si apre con un `<a>` e si legge anche senza aver fatto l'accesso.
 
+## Schermate
+
+_Da aggiungere: i PNG vanno messi in `docs/img/`, poi si toglie il commento qui sotto._
+
+<!--
+| sala d'attesa | board | vittoria |
+|---|---|---|
+| ![Sala d'attesa](docs/img/lobby.png) | ![Board](docs/img/board.png) | ![Vittoria](docs/img/vittoria.png) |
+-->
+
 ## Stato del progetto
 
 | fase | |
@@ -144,7 +179,7 @@ Tutte tranne `/login` stanno dietro `RequireAuth`. Il regolamento è un file in 
 | 4. Board di gioco | fatta |
 | 5. Vittoria e notifica | fatta |
 | 6. PWA installabile e offline | fatta |
-| 7. Deploy | da fare |
+| 7. Deploy | fatta |
 
 ## Note
 
@@ -152,7 +187,11 @@ Tutte tranne `/login` stanno dietro `RequireAuth`. Il regolamento è un file in 
 
 **Senza rete si vede il regolamento, non l'app.** Le aperture di pagina passano prima dalla rete e ripiegano su `regolamento.html` — la stessa pagina che la home collega come regolamento, così il testo esiste in una copia sola. È una scelta: un tracker che prende ogni dato da Firestore, servito dalla cache a linea assente, sarebbe una schermata di caricamento infinita. JavaScript, CSS e icone invece si servono dalla cache, perché il loro nome contiene l'hash del contenuto e non può diventare stantio.
 
-**Se cambi `regolamento.html`, il manifest o le icone, alza la versione in `public/sw.js`.** Quei file sono precaricati e non hanno l'hash nel nome: senza il cambio di `CACHE`, chi ha già visitato il sito continua a vedere la versione vecchia.
+**Se `regolamento.html`, il manifest o le icone vengono modificati, bisogna alzare la versione in `public/sw.js`.** Quei file sono precaricati e non hanno l'hash nel nome: senza il cambio di `CACHE`, chi ha già visitato il sito continua a vedere la versione vecchia.
+
+**Ogni rotta è servita da `index.html`.** Il routing sta nel browser: il server non conosce `/game/K7QM2P`, e senza il rewrite in `firebase.json` ogni ricaricamento dentro una partita sarebbe un 404. Non tocca i file veri — Hosting li prova per primi, quindi `/regolamento.html` resta la pagina statica che è.
+
+**Le due regole di cache dicono il contrario l'una dell'altra, ed è voluto.** I file in `/assets/` hanno l'hash nel nome, non possono diventare stantii, e si tengono per un anno senza rivalidare. `sw.js` ha il nome fisso e comanda tutta la cache: servirne una copia vecchia bloccherebbe ogni aggiornamento, quindi va in `no-cache`.
 
 **Le notifiche sono locali, non push.** Il piano gratuito di Firebase non include Cloud Functions, e una push FCM va inviata da un backend autenticato — mai dal client. Ogni giocatore ha già un listener sulla partita: quando lo stato passa a `finished`, il client mostra una notifica tramite il service worker. Arriva solo ad app aperta o in background, e su iOS solo se la PWA è installata dalla schermata Home. Il permesso si chiede con un bottone all'ingresso in partita, non all'apertura dell'app: un permesso negato non si può ritirare.
 

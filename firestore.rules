@@ -1,0 +1,33 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    match /games/{gameId} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null
+                    && request.resource.data.hostUid == request.auth.uid
+                    && request.resource.data.status == 'lobby';
+      // solo l'host cambia lo stato, tranne quando qualcuno vince
+      allow update: if request.auth != null
+                    && (resource.data.hostUid == request.auth.uid
+                        || (request.resource.data.status == 'finished'
+                            && request.resource.data.winnerUid == request.auth.uid));
+      allow delete: if false;
+
+      match /players/{uid} {
+        allow read: if request.auth != null;
+        // Ciascuno scrive solo il proprio personaggio.
+        // Il livello 1-10 è la regola del gioco, il tetto sul bonus è
+        // buon senso. get() copre i personaggi creati prima del bonus.
+        allow create, update: if request.auth != null
+                              && request.auth.uid == uid
+                              && request.resource.data.level >= 1
+                              && request.resource.data.level <= 10
+                              && request.resource.data.get('bonus', 0) >= 0
+                              && request.resource.data.get('bonus', 0) <= 20;
+        allow delete: if request.auth.uid == uid
+                      || get(/databases/$(database)/documents/games/$(gameId)).data.hostUid == request.auth.uid;
+      }
+    }
+  }
+}
