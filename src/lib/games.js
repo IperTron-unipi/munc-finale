@@ -15,11 +15,11 @@ import { generaCodice } from './gameCode'
 export const LIVELLO_MIN = 1
 export const LIVELLO_MAX = 10
 export const BONUS_MIN = 0
+// non una regola di Munchkin: giocando nessuno ha mai avuto un bonus maggiore di 25/30 
+// senza, si potrebbe scrivere `bonus: 999999`.
+export const BONUS_MAX = 50
 export const LUNGHEZZA_NOME_MAX = 20
 
-// Tetto di buon senso, non una regola di Munchkin: senza, si potrebbe
-// scrivere `bonus: 999999`.
-export const BONUS_MAX = 20
 
 // La forza in combattimento: si legge e basta, non decide la vittoria.
 // Il `?? BONUS_MIN` copre i personaggi creati prima del bonus.
@@ -111,15 +111,16 @@ export async function unisciti(codice, uid, nome) {
 
   if (!partita.exists()) throw new ErroreGioco('gioco/codice-inesistente')
 
-  const { status } = partita.data()
-  if (status === 'playing') throw new ErroreGioco('gioco/gia-iniziata')
-  if (status === 'finished') throw new ErroreGioco('gioco/gia-finita')
-
-  // Rientro: se il personaggio esiste già non lo si sovrascrive,
-  // altrimenti un refresh su /join riporterebbe il livello a 1.
+  // Rientro: se il personaggio esiste già lo status non conta, altrimenti
+  // un refresh su /join riporterebbe il livello a 1.
   const riferimento = doc(db, 'games', codice, 'players', uid)
   const giocatore = await getDoc(riferimento)
+
   if (!giocatore.exists()) {
+    const { status } = partita.data()
+    if (status === 'playing') throw new ErroreGioco('gioco/gia-iniziata')
+    if (status === 'finished') throw new ErroreGioco('gioco/gia-finita')
+
     await setDoc(riferimento, nuovoGiocatore(nome))
   }
 

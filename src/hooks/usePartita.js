@@ -14,8 +14,8 @@ export function usePartita(gameId) {
   const [partitaPrecedente, setPartitaPrecedente] = useState(gameId)
 
   // Cambiata partita, si riparte da zero: senza, si vedrebbero per un
-  // istante i dati della precedente. Il reset durante il render, e non in
-  // un effetto, evita un render coi dati vecchi già a schermo.
+  // istante i dati della precedente. Il reset durante il render 
+  // senza useEffect, evita un render coi dati vecchi già a schermo.
   if (partitaPrecedente !== gameId) {
     setPartitaPrecedente(gameId)
     setPartita(undefined)

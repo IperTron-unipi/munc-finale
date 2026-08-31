@@ -7,8 +7,8 @@ import { join } from 'node:path'
 const DEST = process.argv[2] ?? 'public/icons'
 mkdirSync(DEST, { recursive: true })
 
-const ROSSO = [185, 28, 28]
-const BIANCO = [255, 255, 255]
+const CUOIO = [59, 42, 26]
+const PERGAMENA = [233, 217, 182]
 
 // Contorno della M in coordinate normalizzate 0..1, y verso il basso.
 const M = [
@@ -66,7 +66,7 @@ function disegna(lato, { pieno, scalaM }) {
       const aLettera = (lettera / tot) * aSfondo // la M non deborda dallo sfondo
       const i = (y * lato + x) * 4
       for (let c = 0; c < 3; c++) {
-        px[i + c] = Math.round(ROSSO[c] * (1 - aLettera) + BIANCO[c] * aLettera)
+        px[i + c] = Math.round(CUOIO[c] * (1 - aLettera) + PERGAMENA[c] * aLettera)
       }
       px[i + 3] = Math.round(aSfondo * 255)
     }

@@ -1,15 +1,39 @@
-/* ---- Bordi rossi di sviluppo ---- */
-
-#root {
-  border: 2px dotted red; /* l'app intera */
-}
+/* Ogni schermata è una carta di Munchkin appoggiata sul tavolo: pergamena
+   dentro una cornice di cuoio, con la fascia del titolo attaccata al bordo. */
 
 section {
-  border: 2px solid red; /* la pagina */
+  position: relative;
+  padding: 1.15rem;
+  margin-bottom: 1rem;
+
+  background-color: var(--pergamena);
+  /* Grana della carta: rumore moltiplicato sulla pergamena. */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.7' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)' opacity='.32'/%3E%3C/svg%3E");
+  background-blend-mode: multiply;
+
+  border: var(--bordo) solid var(--cuoio);
+  border-radius: var(--raggio);
+
+  /* Filetto interno della carta, più l'ombra che la stacca dal tavolo. */
+  box-shadow:
+    inset 0 0 0 5px var(--pergamena),
+    inset 0 0 0 6px rgb(59 42 26 / 0.35),
+    0 6px 18px rgb(0 0 0 / 0.45);
 }
 
-form {
-  border: 2px dashed red; /* il form dentro la pagina */
+/* Il titolo è una fascia scura che tocca la cornice su tre lati, come sulle
+   carte vere. I margini negativi valgono il padding della sezione. */
+section > h1 {
+  margin: -1.15rem -1.15rem 1.1rem;
+  padding: 0.7rem 1.15rem 0.55rem;
+
+  color: var(--pergamena);
+  background: var(--cuoio);
+  border-bottom: 2px solid var(--oro);
+}
+
+section > h2:first-of-type {
+  margin-top: 0;
 }
 
 .colonna {
@@ -17,32 +41,134 @@ form {
   flex-direction: column;
 }
 
+/* Il bottone chiude il form, non è la continuazione dell'ultimo campo:
+   senza questo stacco si tocca per sbaglio uscendo dalla tastiera. */
+form.colonna > button {
+  margin-top: 1.5rem;
+}
+
+/* I link in fondo alla carta si staccano dal contenuto. */
+section > a {
+  align-self: flex-start;
+  margin-top: 0.9rem;
+}
+
+/* ---- Stato e messaggi ---- */
+
+/* Attese e note di servizio: presenti, ma non in primo piano. */
+.stato {
+  font-style: italic;
+  color: var(--cuoio-chiaro);
+}
+
+/* Il "Caricamento…" prima che una carta esista: sta sul tavolo nudo. */
+#root > .stato {
+  padding: 2rem 0;
+  color: var(--pergamena-ombra);
+  text-align: center;
+}
+
 .errore {
-  color: red;
+  margin-top: 0.9rem;
+  padding: 0.5rem 0.7rem;
+  color: var(--sangue);
+  font-weight: 500;
+  background: rgb(157 47 34 / 0.08);
+  border: 2px solid var(--sangue);
+  border-radius: var(--raggio);
 }
 
 /* Perché si legga come un link, non come un bottone del form. */
 button.link {
   padding: 0;
-  border: none;
+  min-height: 0;
+  font: inherit;
+  letter-spacing: normal;
+  text-transform: none;
+  color: var(--cuoio);
   background: none;
-  color: blue;
+  border: none;
+  box-shadow: none;
   text-decoration: underline;
+  text-decoration-color: var(--oro);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
   cursor: pointer;
 }
 
-/* Il codice partita si legge ad alta voce a un tavolo: grande e spaziato. */
+button.link:hover {
+  color: var(--sangue);
+  background: none;
+}
+
+button.link:active {
+  transform: none;
+}
+
+/* ---- Home: le due azioni principali ---- */
+
+/* Creare e unirsi sono l'unico motivo per cui si apre l'app: si toccano,
+   non si leggono. */
+.azione {
+  /* Larghe quanto la carta: sovrascrive l'allineamento dei link di servizio. */
+  align-self: stretch;
+  margin-top: 0.75rem;
+  padding: 0.85rem 1rem;
+
+  font-family: var(--display);
+  font-size: 1.3rem;
+  font-weight: 700;
+  text-align: center;
+  text-decoration: none;
+
+  color: var(--pergamena);
+  background: var(--cuoio);
+  border: 2px solid var(--cuoio);
+  border-radius: var(--raggio);
+  box-shadow: 0 3px 0 rgb(36 26 18 / 0.55);
+  transition: transform 80ms, box-shadow 80ms;
+}
+
+.azione:hover {
+  color: var(--oro-acceso);
+  background: #4b3623;
+}
+
+.azione:active {
+  transform: translateY(3px);
+  box-shadow: 0 0 0 rgb(36 26 18 / 0.55);
+}
+
+/* ---- Codice partita ---- */
+
+/* Il codice si legge ad alta voce a un tavolo: grande, spaziato e su una
+   targa che lo isola dal resto. */
 .codice {
-  font-family: monospace;
+  display: inline-block;
+  padding: 0.35rem 0.75rem;
+
+  font-family: var(--mono);
   font-size: 1.6rem;
   letter-spacing: 0.2em;
+  /* Il letter-spacing aggiunge spazio anche dopo l'ultima lettera. */
+  text-indent: 0.2em;
+
+  background: var(--pergamena-ombra);
+  border: 2px dashed var(--cuoio);
+  border-radius: var(--raggio);
 }
 
 /* ---- Tabellone di gioco ---- */
 
-.tabellone {
+.tabellone,
+.classifica {
   list-style: none;
   padding: 0;
+  margin: 0.5rem 0 0;
+}
+
+.classifica {
+  counter-reset: posizione;
 }
 
 /* Una riga per personaggio. Il wrap fa scendere i comandi sotto al nome
@@ -51,36 +177,103 @@ button.link {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.75rem;
-  padding: 0.5rem 0;
-  border-bottom: 1px solid #ccc;
+  gap: 0.5rem 0.75rem;
+  padding: 0.7rem 0.6rem;
+  border-bottom: 1px solid var(--pergamena-ombra);
 }
 
-/* La propria riga si deve trovare a colpo d'occhio in mezzo alle altre. */
+/* La propria riga si deve trovare a colpo d'occhio in mezzo alle altre:
+   fra righe separate da un filo, è l'unica con una cornice sua. */
 .giocatore.mio {
-  font-weight: bold;
+  font-weight: 700;
+  margin: 0.3rem 0;
+  background: rgb(184 132 43 / 0.12);
+  border: 2px solid var(--oro);
+  border-radius: var(--raggio);
 }
 
 .giocatore .nome {
-  flex: 1;
+  flex: 1 1 8rem;
+  min-width: 0;
 }
 
-/* Livello grande, bonus e forza in piccolo: è il livello che fa vincere. */
+/* Tre numeri incolonnati sotto la loro etichetta, allineati sulla stessa
+   riga di base. */
 .statistiche {
   display: flex;
-  align-items: baseline;
-  gap: 0.5rem;
+  align-items: flex-end;
+  gap: 1.05rem;
   white-space: nowrap;
 }
 
-.statistiche .livello {
-  font-family: monospace;
-  font-size: 1.6rem;
+.valore {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1;
 }
 
-.statistiche .dettaglio {
-  font-size: 0.85rem;
-  color: #555;
+.valore .etichetta {
+  margin-bottom: 0.25rem;
+  font-size: 0.58rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--cuoio-chiaro);
+}
+
+.valore strong {
+  font-family: var(--display);
+  font-size: 1.7rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--cuoio);
+}
+
+/* Gli operatori nello spazio fra le colonne dicono il conto che c'è sotto:
+   livello più bonus fa forza. */
+.valore.bonus::before,
+.valore.forza::before {
+  position: absolute;
+  bottom: 0.1rem;
+  left: -0.7rem;
+  font-family: var(--display);
+  font-size: 0.95rem;
+  color: var(--cuoio-chiaro);
+}
+
+.valore.bonus::before {
+  content: '+';
+}
+
+.valore.forza::before {
+  content: '=';
+}
+
+/* La scala dei dieci livelli, sotto ogni riga: il pieno è la strada fatta,
+   le tacche che restano sono quelle che mancano alla vittoria. Il livello
+   arriva dalla proprietà --livello impostata sulla riga. */
+.giocatore::after {
+  content: '';
+  flex: 0 0 100%;
+  height: 10px;
+
+  background-color: var(--pergamena-ombra);
+  background-image:
+    repeating-linear-gradient(
+      90deg,
+      transparent 0 calc(10% - 2px),
+      var(--cuoio) calc(10% - 2px) 10%
+    ),
+    linear-gradient(
+      90deg,
+      var(--cuoio) 0 calc(var(--livello, 0) * 10%),
+      transparent 0
+    );
+
+  border: 2px solid var(--cuoio);
+  border-radius: 1px;
 }
 
 .comandi {
@@ -94,83 +287,171 @@ button.link {
 .comandi .gruppo {
   display: flex;
   align-items: center;
-  gap: 0.25rem;
+  gap: 0.3rem;
 }
 
 .comandi .etichetta {
-  font-size: 0.85rem;
-  font-weight: normal;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--cuoio-chiaro);
 }
 
 /* 44px: il minimo per un bersaglio touch. */
 .comandi button {
   min-width: 44px;
   min-height: 44px;
-  font-size: 1.2rem;
+  padding: 0;
+  font-family: var(--display);
+  font-size: 1.5rem;
+  line-height: 1;
 }
 
-/* La conferma di vittoria deve interrompere la lettura del tabellone. */
+.comandi label {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-top: 0;
+  min-height: 44px;
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+}
+
+/* ---- Conferma di vittoria ---- */
+
+/* Deve interrompere la lettura del tabellone: rosso Porta, dentro la carta. */
 .conferma {
-  border: 2px solid black;
-  padding: 0.75rem;
-  margin: 0.5rem 0;
+  margin: 1rem 0;
+  padding: 0.9rem 1rem;
+  background: rgb(157 47 34 / 0.08);
+  border: 2px solid var(--sangue);
+  border-radius: var(--raggio);
+}
+
+.conferma p {
+  margin-top: 0;
 }
 
 .conferma button {
   min-height: 44px;
-  margin-right: 0.5rem;
+  margin: 0.25rem 0.5rem 0 0;
 }
 
 /* ---- Avviso notifiche ---- */
 
-/* In cima alla partita, ma discreto: si deve poter ignorare. */
+/* Sopra la carta, sul tavolo: si deve poter ignorare. */
 .avviso {
-  border: 1px solid #999;
-  padding: 0.5rem 0.75rem;
-  margin: 0 0 0.5rem;
+  margin: 0 0 0.75rem;
+  padding: 0.55rem 0.8rem;
   font-size: 0.9rem;
+  color: var(--pergamena);
+  background: rgb(59 42 26 / 0.55);
+  border: 1px solid var(--oro);
+  border-radius: var(--raggio);
+}
+
+.avviso button.link {
+  color: var(--oro-acceso);
+}
+
+.avviso button.link:hover {
+  color: var(--pergamena);
 }
 
 /* ---- Fine partita ---- */
 
-/* Chi ha vinto va letto da lontano: il telefono è in mezzo al tavolo. */
+/* Chi ha vinto va letto da lontano: il telefono è in mezzo al tavolo. Qui la
+   carta si rovescia: cuoio scuro e oro, come il retro del mazzo. */
 .vittoria {
-  border: 2px solid black;
-  padding: 1rem;
-  margin-bottom: 1rem;
+  margin: -1.15rem -1.15rem 1.25rem;
+  padding: 1.5rem 1.15rem 1.25rem;
   text-align: center;
+  color: var(--pergamena);
+  background: var(--cuoio);
+  border-bottom: 3px solid var(--oro);
+  box-shadow:
+    inset 0 0 0 4px var(--cuoio),
+    inset 0 0 0 5px rgb(184 132 43 / 0.5);
 }
 
 .vittoria h1 {
-  margin: 0.25rem 0;
+  margin: 0.35rem 0;
+  font-size: 2.4rem;
+  color: var(--oro-acceso);
+}
+
+.vittoria p {
+  color: var(--pergamena-ombra);
 }
 
 .vittoria .occhiello {
   margin: 0;
-  font-size: 0.85rem;
-  color: #555;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--oro);
   text-transform: uppercase;
-  letter-spacing: 0.1em;
-}
-
-/* Stesse righe del tabellone, solo in ordine di livello. */
-.classifica {
-  list-style: none;
-  padding: 0;
-  counter-reset: posizione;
+  letter-spacing: 0.16em;
 }
 
 .classifica .giocatore::before {
   counter-increment: posizione;
-  content: counter(posizione) '.';
+  content: counter(posizione);
   min-width: 1.5rem;
-  color: #555;
+  font-family: var(--display);
+  font-size: 1.25rem;
+  color: var(--cuoio-chiaro);
 }
 
 .classifica .vincitore {
-  font-weight: bold;
+  font-weight: 700;
+  margin: 0.3rem 0;
+  background: rgb(184 132 43 / 0.16);
+  border: 2px solid var(--oro);
+  border-radius: var(--raggio);
+}
+
+.classifica .vincitore::before {
+  color: var(--oro);
+}
+
+/* La scala del vincitore è piena e dorata: il tesoro, non la fatica. */
+.classifica .vincitore::after {
+  background-image:
+    repeating-linear-gradient(
+      90deg,
+      transparent 0 calc(10% - 2px),
+      var(--cuoio) calc(10% - 2px) 10%
+    ),
+    linear-gradient(
+      90deg,
+      var(--oro) 0 calc(var(--livello, 0) * 10%),
+      transparent 0
+    );
 }
 
 .classifica .vincitore .nome::after {
   content: ' 🏆';
+}
+
+/* ---- Lobby ---- */
+
+/* L'elenco di chi è entrato: righe, non pallini. */
+section > ul:not(.tabellone):not(.classifica) {
+  list-style: none;
+  padding: 0;
+  margin: 0.25rem 0 0;
+}
+
+section > ul:not(.tabellone):not(.classifica) li {
+  padding: 0.5rem 0.6rem;
+  border-bottom: 1px solid var(--pergamena-ombra);
+}
+
+/* Il filo separa le righe fra loro: sotto l'ultima non separa niente. Chi ha
+   già una cornice sua resta escluso, o gliela cancellerebbe. */
+section > ul:not(.tabellone):not(.classifica) li:last-child,
+.giocatore:last-child:not(.mio):not(.vincitore) {
+  border-bottom: none;
 }

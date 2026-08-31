@@ -39,6 +39,7 @@ function Finished({ gameId, partita, giocatori }) {
             <li
               key={g.uid}
               className={vincitore ? 'giocatore vincitore' : 'giocatore'}
+              style={{ '--livello': g.level }}
             >
               <span className="nome">
                 {g.name}
@@ -48,9 +49,17 @@ function Finished({ gameId, partita, giocatori }) {
               </span>
 
               <span className="statistiche">
-                <strong className="livello">Liv. {g.level}</strong>
-                <span className="dettaglio">
-                  bonus {bonus} → forza {totale(g)}
+                <span className="valore">
+                  <span className="etichetta">Livello</span>
+                  <strong>{g.level}</strong>
+                </span>
+                <span className="valore bonus">
+                  <span className="etichetta">Bonus</span>
+                  <strong>{bonus}</strong>
+                </span>
+                <span className="valore forza">
+                  <span className="etichetta">Forza</span>
+                  <strong>{totale(g)}</strong>
                 </span>
               </span>
             </li>

@@ -3,26 +3,45 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#b91c1c" />
+    <meta name="theme-color" content="#241a12" />
     <title>Regolamento — Munchkin Tracker</title>
     <!-- Due mestieri, una copia sola del testo: il regolamento che si apre
          dalla home, e il ripiego che il service worker serve quando una
          pagina non si carica. Tutto in linea, perché da ripiego non può
-         dipendere da file che vadano scaricati. -->
+         dipendere da file che vadano scaricati: stessi colori dell'app, ma
+         font di sistema. -->
     <style>
+      :root {
+        --tavolo: #241a12;
+        --cuoio: #3b2a1a;
+        --cuoio-chiaro: #6b5236;
+        --pergamena: #e9d9b6;
+        --pergamena-ombra: #d6c193;
+        --oro: #b8842b;
+        --sangue: #9d2f22;
+      }
+
       body {
         margin: 0;
-        padding: 1rem;
-        font-family: system-ui, 'Segoe UI', Roboto, Arial, sans-serif;
-        line-height: 1.5;
+        padding: 1.5rem 0.75rem 3rem;
+        font-family: 'Segoe UI', system-ui, Roboto, Arial, sans-serif;
+        line-height: 1.55;
+        color: var(--pergamena);
+        background: var(--tavolo);
+      }
+
+      /* Una colonna sola, larga quanto un telefono, anche sul desktop. */
+      body > * {
         max-width: 34rem;
         margin-inline: auto;
       }
 
       .avviso {
-        border: 2px solid #b91c1c;
         padding: 0.75rem 1rem;
         margin-bottom: 1.5rem;
+        background: rgb(157 47 34 / 0.18);
+        border: 2px solid var(--sangue);
+        border-radius: 3px;
       }
 
       /* A farsi vedere ci pensa il riquadro: il titolo della pagina è il regolamento. */
@@ -30,7 +49,7 @@
         margin: 0 0 0.5rem;
         font-size: 0.8rem;
         font-weight: bold;
-        color: #b91c1c;
+        color: #e8917f;
         text-transform: uppercase;
         letter-spacing: 0.1em;
       }
@@ -43,13 +62,35 @@
         min-height: 44px;
         margin-top: 0.75rem;
         padding: 0 1rem;
-        font-size: 1rem;
+        font-size: 0.8rem;
+        font-weight: bold;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--cuoio);
+        background: var(--pergamena);
+        border: 2px solid var(--pergamena);
+        border-radius: 3px;
+        cursor: pointer;
+      }
+
+      /* Cinque corpi, ciascuno un quarto più grande del precedente:
+         0.8 etichette, 1 testo, 1.3 voci, 1.65 h2, 2.1 h1. */
+      h1,
+      h2 {
+        font-family: 'Palatino Linotype', Palatino, Georgia, serif;
+        color: var(--pergamena);
+        line-height: 1.15;
+      }
+
+      h1 {
+        font-size: 2.1rem;
       }
 
       h2 {
-        margin-top: 1.75rem;
-        border-bottom: 1px solid #ccc;
-        padding-bottom: 0.25rem;
+        margin-top: 2rem;
+        padding-bottom: 0.3rem;
+        font-size: 1.65rem;
+        border-bottom: 2px solid var(--oro);
       }
 
       .marchio {
@@ -57,6 +98,10 @@
         align-items: center;
         gap: 0.5rem;
         font-weight: bold;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        font-size: 0.8rem;
+        color: var(--pergamena-ombra);
       }
 
       .marchio img {
@@ -64,19 +109,52 @@
         height: 32px;
       }
 
+      /* Ogni voce del regolamento è una carta: fondo pergamena, cornice cuoio. */
+      /* Solo `margin-top`: la scorciatoia `margin` cancellerebbe il
+         `margin-inline: auto` che tiene la colonna al centro. */
+      dl {
+        margin-top: 1rem;
+      }
+
       dt {
+        margin-top: 0.75rem;
+        padding: 0.4rem 0.8rem;
+        font-family: 'Palatino Linotype', Palatino, Georgia, serif;
+        font-size: 1.3rem;
         font-weight: bold;
-        margin-top: 0.5rem;
+        color: var(--pergamena);
+        background: var(--cuoio);
+        border: 2px solid var(--cuoio);
+        border-bottom: none;
       }
 
       dd {
-        margin: 0 0 0 1rem;
+        margin: 0;
+        padding: 0.6rem 0.8rem;
+        color: var(--cuoio);
+        background: var(--pergamena);
+        border: 2px solid var(--cuoio);
+      }
+
+      a {
+        color: var(--oro);
+        text-decoration-thickness: 2px;
+        text-underline-offset: 3px;
+      }
+
+      a:hover {
+        color: var(--pergamena);
+      }
+
+      :where(a, button):focus-visible {
+        outline: 3px solid var(--oro);
+        outline-offset: 2px;
       }
 
       footer {
         margin-top: 2rem;
         font-size: 0.8rem;
-        color: #555;
+        color: #9c8865;
       }
     </style>
   </head>

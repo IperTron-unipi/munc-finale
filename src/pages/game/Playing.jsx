@@ -118,7 +118,12 @@ function Playing({ gameId, partita, giocatori }) {
           const bonus = g.bonus ?? BONUS_MIN
 
           return (
-            <li key={g.uid} className={sonoIo ? 'giocatore mio' : 'giocatore'}>
+            // --livello disegna in CSS la scala dei dieci livelli sotto la riga.
+            <li
+              key={g.uid}
+              className={sonoIo ? 'giocatore mio' : 'giocatore'}
+              style={{ '--livello': g.level }}
+            >
               <span className="nome">
                 {g.name}
                 {g.uid === partita.hostUid && ' — host'}
@@ -126,11 +131,21 @@ function Playing({ gameId, partita, giocatori }) {
                 {g.isFighter && ' ⚔'}
               </span>
 
-              {/* Il livello grande perché è quello che fa vincere. */}
+              {/* Livello e forza pesano uguale: il primo fa vincere la
+                  partita, la seconda i combattimenti. Il bonus si legge, ma
+                  è solo l'addendo che porta dall'uno all'altra. */}
               <span className="statistiche">
-                <strong className="livello">Liv. {g.level}</strong>
-                <span className="dettaglio">
-                  bonus {bonus} → forza {totale(g)}
+                <span className="valore">
+                  <span className="etichetta">Livello</span>
+                  <strong>{g.level}</strong>
+                </span>
+                <span className="valore bonus">
+                  <span className="etichetta">Bonus</span>
+                  <strong>{bonus}</strong>
+                </span>
+                <span className="valore forza">
+                  <span className="etichetta">Forza</span>
+                  <strong>{totale(g)}</strong>
                 </span>
               </span>
 

@@ -1,3 +1,204 @@
+/* Fondamenta: token, azzeramenti e stile degli elementi base.
+   I componenti stanno in App.css. */
+
+:root {
+  /* Il tavolo su cui poggiano le carte: marrone scuro, quasi nero. */
+  --tavolo: #241a12;
+  --tavolo-alto: #35261a;
+
+  /* Il marrone scuro delle cornici e del testo sulla pergamena. */
+  --cuoio: #3b2a1a;
+  --cuoio-chiaro: #6b5236;
+
+  /* La pergamena sabbia della faccia della carta. */
+  --pergamena: #e9d9b6;
+  --pergamena-ombra: #d6c193;
+
+  /* Ottone: host, vincitore, livelli conquistati, anello di focus. */
+  --oro: #b8842b;
+  --oro-acceso: #e8bc63;
+
+  /* Il rosso delle carte Porta: solo per errori e vittoria. */
+  --sangue: #9d2f22;
+
+  --display: 'Grenze Gotisch', 'Palatino Linotype', Georgia, serif;
+  --testo: 'Alegreya Sans', 'Segoe UI', system-ui, sans-serif;
+  --mono: 'Space Mono', ui-monospace, 'Courier New', monospace;
+
+  --bordo: 3px;
+  --raggio: 3px;
+
+  color-scheme: light;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 body {
-  font-family: system-ui, 'Segoe UI', Roboto, Arial, sans-serif;
+  margin: 0;
+  padding: 1rem 0.75rem 3rem;
+  min-height: 100dvh;
+
+  font-family: var(--testo);
+  font-size: 1.0625rem;
+  line-height: 1.55;
+  color: var(--cuoio);
+
+  /* La luce cade dall'alto sul tavolo, i bordi restano in ombra. */
+  background-color: var(--tavolo);
+  background-image: radial-gradient(
+    120% 70% at 50% 0%,
+    var(--tavolo-alto) 0%,
+    var(--tavolo) 65%
+  );
+  background-attachment: fixed;
+}
+
+/* La colonna in cui vive tutta l'app: una carta larga quanto un telefono,
+   centrata anche sul desktop. */
+#root {
+  max-width: 32rem;
+  margin-inline: auto;
+}
+
+/* ---- Titoli ---- */
+
+/* La gotica sta ai titoli di schermata e ai numeri: usata anche per i
+   sottotitoli stancherebbe la lettura al tavolo. */
+h1 {
+  margin: 0;
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: 1.9rem;
+  line-height: 1.1;
+  letter-spacing: 0.01em;
+}
+
+/* I sottotitoli sono etichette di sezione della carta, non insegne. */
+h2 {
+  margin: 1.75rem 0 0.4rem;
+  padding-bottom: 0.3rem;
+
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: var(--cuoio-chiaro);
+
+  border-bottom: 2px solid var(--oro);
+}
+
+p {
+  margin: 0.6rem 0;
+}
+
+strong {
+  font-weight: 700;
+}
+
+/* ---- Campi ---- */
+
+label {
+  margin-top: 0.9rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--cuoio-chiaro);
+}
+
+input[type='text'],
+input[type='email'],
+input[type='password'] {
+  margin-top: 0.3rem;
+  padding: 0.6rem 0.7rem;
+  min-height: 44px;
+
+  font: inherit;
+  color: var(--cuoio);
+
+  background: #f3e8cd;
+  border: 2px solid var(--cuoio);
+  border-radius: var(--raggio);
+
+  /* Incavo appena accennato: il campo sprofonda nella pergamena. */
+  box-shadow: inset 0 2px 3px rgb(59 42 26 / 0.18);
+}
+
+input[type='checkbox'] {
+  width: 1.15rem;
+  height: 1.15rem;
+  accent-color: var(--cuoio);
+}
+
+/* ---- Bottoni ---- */
+
+button {
+  padding: 0.55rem 1.1rem;
+  min-height: 44px;
+
+  font-family: var(--testo);
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+
+  color: var(--pergamena);
+  background: var(--cuoio);
+  border: 2px solid var(--cuoio);
+  border-radius: var(--raggio);
+  cursor: pointer;
+
+  /* Lo spessore che il bottone perde quando lo premi, qui sotto. */
+  box-shadow: 0 3px 0 rgb(36 26 18 / 0.55);
+  transition: transform 80ms, box-shadow 80ms;
+}
+
+button:hover {
+  background: #4b3623;
+}
+
+button:active {
+  transform: translateY(3px);
+  box-shadow: 0 0 0 rgb(36 26 18 / 0.55);
+}
+
+button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: 0 3px 0 rgb(36 26 18 / 0.3);
+}
+
+/* ---- Link ---- */
+
+a {
+  color: var(--cuoio);
+  text-decoration-color: var(--oro);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+  font-weight: 500;
+}
+
+a:hover {
+  color: var(--sangue);
+}
+
+/* Un anello unico per tutto ciò che prende il fuoco da tastiera. */
+:where(a, button, input, [tabindex]):focus-visible {
+  outline: 3px solid var(--oro);
+  outline-offset: 2px;
+}
+
+/* Chi ha chiesto meno movimento non deve vedere il bottone affondare. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }

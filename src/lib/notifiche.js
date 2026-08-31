@@ -43,7 +43,7 @@ export async function mostraNotifica(titolo, opzioni = {}) {
   if (permessoNotifiche() !== 'granted') return false
 
   try {
-    // getRegistration() risponde subito; `serviceWorker.ready` resterebbe
+    // getRegistration() risponde subito; `navigator.serviceWorker.ready` resterebbe
     // appesa per sempre se nessun worker è registrato.
     const registrazione = await navigator.serviceWorker.getRegistration()
 
@@ -54,6 +54,7 @@ export async function mostraNotifica(titolo, opzioni = {}) {
     }
 
     // Ripiego, per i primi istanti in cui il worker non è ancora attivo.
+    //anche se non funziona su Android, almeno su desktop e iOS si potrebbe vede la notifica.
     new Notification(titolo, opzioni)
     return true
   } catch {

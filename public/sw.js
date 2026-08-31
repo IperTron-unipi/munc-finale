@@ -1,9 +1,8 @@
 // Service worker unico: notifica di vittoria e cache.
-// Due worker sullo stesso scope non convivono, il secondo sostituisce il primo.
 
 // Cambiare la versione butta via la cache vecchia (vedi `activate`).
 // Va fatto a ogni modifica di un file del GUSCIO: quelli non hanno l'hash nel nome.
-const CACHE = 'munchkin-v2'
+const CACHE = 'munchkin-v4'
 
 // I file dal nome stabile. Quelli generati da Vite cambiano nome a ogni build,
 // quindi non si possono elencare qui: li prende la cache a runtime.
@@ -17,8 +16,8 @@ const GUSCIO = [
   '/icons/apple-touch-icon-180.png',
 ]
 
-// Il worker nuovo sostituisce subito il vecchio, senza aspettare
-// la chiusura delle schede aperte.
+// Il worker nuovo sostituisce subito il vecchio,
+// senza aspettare la chiusura delle schede aperte.
 self.addEventListener('install', (evento) => {
   evento.waitUntil(
     caches
