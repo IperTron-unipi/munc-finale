@@ -15,8 +15,8 @@ function Home() {
     <section className="colonna">
       <h1>Munchkin Tracker</h1>
 
-      <p>
-        {user.email}{' '}
+      <p className="stato">
+        Sei entrato come {user.email}.{' '}
         <button type="button" className="link" onClick={esci}>
           Esci
         </button>

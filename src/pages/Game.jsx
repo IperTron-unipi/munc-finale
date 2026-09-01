@@ -18,7 +18,7 @@ function Game() {
   // riconoscere. Inoltre gli hook vanno chiamati prima dei return qui sotto.
   useNotificaVittoria(gameId, partita, user.uid)
 
-  if (loading) return <p className="stato">Caricamento…</p>
+  if (loading) return <p className="stato">Carico la partita…</p>
 
   if (error) {
     return (
@@ -39,7 +39,7 @@ function Game() {
         <p className="errore" role="alert">
           {messaggioErroreGioco('gioco/codice-inesistente')}
         </p>
-        <Link to="/join">Prova un altro codice</Link>
+        <Link to="/join">Prova con un altro codice</Link>
         <Link to="/">Torna alla home</Link>
       </section>
     )
@@ -53,7 +53,10 @@ function Game() {
     return (
       <section className="colonna">
         <h1>Non fai parte di questa partita</h1>
-        <p>Per giocare devi prima unirti con il codice.</p>
+        <p>
+          La partita {gameId} esiste, ma non sei fra i suoi giocatori. Per
+          giocare devi unirti con il codice.
+        </p>
         <Link to={`/join?codice=${gameId}`}>Unisciti a {gameId}</Link>
         <Link to="/">Torna alla home</Link>
       </section>

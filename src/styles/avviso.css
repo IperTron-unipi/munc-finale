@@ -1,0 +1,29 @@
+/* ---- Avviso notifiche ---- */
+
+/* Sopra la carta, sul tavolo: si deve poter ignorare. */
+.avviso {
+  margin: 0 0 0.75rem;
+  padding: 0.55rem 0.8rem;
+
+  /* Chiaro su scuro e in corpo piccolo: un peso in più, e un filo di
+     spaziatura e interlinea, o si legge a fatica. */
+  font-size: var(--t-minore);
+  font-weight: 500;
+  line-height: 1.5;
+  letter-spacing: 0.01em;
+  color: var(--pergamena);
+  background: rgb(59 42 26 / 0.55);
+  /* Filo in pergamena scolorita: l'oro qui rubava l'occhio alla carta. */
+  border: 1px solid rgb(233 217 182 / 0.25);
+  border-radius: var(--raggio);
+}
+
+.avviso button.link {
+  color: var(--pergamena);
+  text-decoration-color: rgb(233 217 182 / 0.5);
+}
+
+.avviso button.link:hover {
+  color: var(--oro-acceso);
+  text-decoration-color: currentColor;
+}

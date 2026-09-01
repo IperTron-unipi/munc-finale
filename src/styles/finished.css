@@ -1,0 +1,83 @@
+/* ---- Fine partita ----
+   La riga condivisa (.giocatore, .statistiche, .valore…) vive in
+   tabellone.css: qui solo ciò che è specifico della classifica finale. */
+
+/* Chi ha vinto va letto da lontano: il telefono è in mezzo al tavolo. Qui la
+   carta si rovescia: cuoio scuro e oro, come il retro del mazzo. */
+.vittoria {
+  margin: -1.15rem -1.15rem 1.25rem;
+  padding: 1.5rem 1.15rem 1.25rem;
+  text-align: center;
+  color: var(--pergamena);
+  background: var(--cuoio);
+  border-bottom: 1px solid var(--oro);
+}
+
+.vittoria h1 {
+  margin: 0.35rem 0;
+  font-size: var(--t-vittoria);
+  color: var(--oro-acceso);
+}
+
+/* Chiaro su scuro: un filo di spaziatura e di interlinea in più, o le
+   righe si chiudono. */
+.vittoria p {
+  color: var(--pergamena-ombra);
+  line-height: 1.6;
+  letter-spacing: 0.01em;
+}
+
+/* Oro acceso e non oro pieno: su cuoio, a questo corpo, l'oro pieno
+   scendeva sotto il contrasto leggibile. */
+.vittoria .occhiello {
+  margin: 0;
+  font-size: var(--t-etichetta);
+  font-weight: 700;
+  color: var(--oro-acceso);
+  text-transform: uppercase;
+  letter-spacing: var(--sp-sezione);
+}
+
+.classifica {
+  counter-reset: posizione;
+}
+
+.classifica .giocatore::before {
+  counter-increment: posizione;
+  content: counter(posizione);
+  min-width: 1.5rem;
+  font-family: var(--display);
+  font-size: var(--t-voce);
+  color: var(--cuoio-chiaro);
+}
+
+.classifica .vincitore {
+  font-weight: 700;
+  margin: 0.3rem 0;
+  background: rgb(184 132 43 / 0.13);
+  border: 1px solid var(--oro);
+  border-radius: var(--raggio);
+}
+
+.classifica .vincitore::before {
+  color: var(--cuoio);
+}
+
+/* La scala del vincitore è piena e dorata: il tesoro, non la fatica. */
+.classifica .vincitore::after {
+  background-image:
+    repeating-linear-gradient(
+      90deg,
+      transparent 0 calc(10% - 1px),
+      rgb(59 42 26 / 0.4) calc(10% - 1px) 10%
+    ),
+    linear-gradient(
+      90deg,
+      var(--oro) 0 calc(var(--livello, 0) * 10%),
+      transparent 0
+    );
+}
+
+.classifica .vincitore .nome::after {
+  content: ' 🏆';
+}

@@ -63,7 +63,7 @@ self.addEventListener('fetch', (evento) => {
   // linea darebbe un "Caricamento…" infinito, perché ogni dato è su Firestore.
   if (richiesta.mode === 'navigate') {
     evento.respondWith(
-      fetch(richiesta).catch(() => caches.match('/regolamento.html')),
+      fetch(richiesta).catch(() => caches.match('/regolamento.html')),          // se la fetch fallisce, serve la pagina di regolamento dalla cache
     )
     return
   }

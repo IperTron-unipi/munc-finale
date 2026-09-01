@@ -39,8 +39,8 @@
       .avviso {
         padding: 0.75rem 1rem;
         margin-bottom: 1.5rem;
-        background: rgb(157 47 34 / 0.18);
-        border: 2px solid var(--sangue);
+        background: rgb(157 47 34 / 0.12);
+        border: 1px solid var(--sangue);
         border-radius: 3px;
       }
 
@@ -68,7 +68,7 @@
         text-transform: uppercase;
         color: var(--cuoio);
         background: var(--pergamena);
-        border: 2px solid var(--pergamena);
+        border: 1px solid var(--pergamena);
         border-radius: 3px;
         cursor: pointer;
       }
@@ -90,7 +90,8 @@
         margin-top: 2rem;
         padding-bottom: 0.3rem;
         font-size: 1.65rem;
-        border-bottom: 2px solid var(--oro);
+        /* Un filo di pergamena scolorita: l'oro resta ai link. */
+        border-bottom: 1px solid rgb(233 217 182 / 0.25);
       }
 
       .marchio {
@@ -124,7 +125,7 @@
         font-weight: bold;
         color: var(--pergamena);
         background: var(--cuoio);
-        border: 2px solid var(--cuoio);
+        border: 1px solid var(--cuoio);
         border-bottom: none;
       }
 
@@ -133,12 +134,12 @@
         padding: 0.6rem 0.8rem;
         color: var(--cuoio);
         background: var(--pergamena);
-        border: 2px solid var(--cuoio);
+        border: 1px solid var(--cuoio);
       }
 
       a {
         color: var(--oro);
-        text-decoration-thickness: 2px;
+        text-decoration-thickness: 1px;
         text-underline-offset: 3px;
       }
 
@@ -149,12 +150,6 @@
       :where(a, button):focus-visible {
         outline: 3px solid var(--oro);
         outline-offset: 2px;
-      }
-
-      footer {
-        margin-top: 2rem;
-        font-size: 0.8rem;
-        color: #9c8865;
       }
     </style>
   </head>
@@ -233,11 +228,6 @@
     </p>
 
     <p><a href="/">← Torna all'app</a></p>
-
-    <footer>
-      Munchkin Tracker — progetto per l'esame di Sviluppo Applicazioni Web,
-      Università di Pisa.
-    </footer>
 
     <script>
       const avviso = document.getElementById('avviso')

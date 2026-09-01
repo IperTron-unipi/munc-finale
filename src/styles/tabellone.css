@@ -1,0 +1,165 @@
+/* ---- Tabellone di gioco ----
+   Riga per giocatore: condivisa fra il tabellone in corsa (Playing, <ul>)
+   e la classifica finale (Finished, <ol>). Le decorazioni del podio
+   (vincitore, numerazione) stanno in finished.css. */
+
+.tabellone,
+.classifica {
+  list-style: none;
+  padding: 0;
+  margin: 0.5rem 0 0;
+}
+
+/* Una riga per personaggio. Il wrap fa scendere i comandi sotto al nome
+   sugli schermi stretti. */
+.giocatore {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+  padding: 0.7rem 0.6rem;
+  border-bottom: 1px solid var(--filo);
+}
+
+/* La propria riga si deve trovare a colpo d'occhio in mezzo alle altre:
+   fra righe separate da un filo, è l'unica con un fondo e una cornice. */
+.giocatore.mio {
+  font-weight: 700;
+  margin: 0.3rem 0;
+  background: rgb(184 132 43 / 0.13);
+  border: 1px solid var(--oro);
+  border-radius: var(--raggio);
+}
+
+.giocatore .nome {
+  flex: 1 1 8rem;
+  min-width: 0;
+}
+
+/* Tre numeri incolonnati sotto la loro etichetta, allineati sulla stessa
+   riga di base. */
+.statistiche {
+  display: flex;
+  align-items: flex-end;
+  gap: 1.05rem;
+  white-space: nowrap;
+}
+
+.valore {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1;
+}
+
+.valore .etichetta {
+  margin-bottom: 0.3rem;
+  font-size: var(--t-etichetta-fitta);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: var(--sp-etichetta);
+  color: var(--cuoio-chiaro);
+}
+
+.valore strong {
+  font-family: var(--display);
+  font-size: var(--t-dato);
+  font-weight: 700;
+  line-height: 1;
+  color: var(--cuoio);
+}
+
+/* Gli operatori nello spazio fra le colonne dicono il conto che c'è sotto:
+   livello più bonus fa forza. */
+.valore.bonus::before,
+.valore.forza::before {
+  position: absolute;
+  bottom: 0.1rem;
+  left: -0.7rem;
+  font-family: var(--display);
+  font-size: var(--t-testo);
+  color: var(--cuoio-chiaro);
+}
+
+.valore.bonus::before {
+  content: '+';
+}
+
+.valore.forza::before {
+  content: '=';
+}
+
+/* La scala dei dieci livelli, sotto ogni riga: il pieno è la strada fatta,
+   le tacche che restano sono quelle che mancano alla vittoria. Il livello
+   arriva dalla proprietà --livello impostata sulla riga. */
+.giocatore::after {
+  content: '';
+  flex: 0 0 100%;
+  height: 8px;
+
+  background-color: var(--pergamena-ombra);
+  background-image:
+    repeating-linear-gradient(
+      90deg,
+      transparent 0 calc(10% - 1px),
+      rgb(59 42 26 / 0.4) calc(10% - 1px) 10%
+    ),
+    linear-gradient(
+      90deg,
+      var(--cuoio) 0 calc(var(--livello, 0) * 10%),
+      transparent 0
+    );
+
+  border: 1px solid var(--filo);
+  border-radius: 1px;
+}
+
+.comandi {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Ogni coppia +/− raggruppata, per non confondere le due statistiche. */
+.comandi .gruppo {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.comandi .etichetta {
+  font-size: var(--t-etichetta-fitta);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: var(--sp-etichetta);
+  color: var(--cuoio-chiaro);
+}
+
+/* 44px: il minimo per un bersaglio touch. */
+.comandi button {
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0;
+  font-family: var(--display);
+  font-size: var(--t-voce);
+  line-height: 1;
+}
+
+.comandi label {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-top: 0;
+  min-height: 44px;
+  font-size: var(--t-etichetta-fitta);
+  letter-spacing: var(--sp-etichetta);
+  cursor: pointer;
+}
+
+/* Il filo separa le righe fra loro: sotto l'ultima non separa niente. Chi ha
+   già una cornice sua resta escluso, o gliela cancellerebbe. */
+.giocatore:last-child:not(.mio):not(.vincitore) {
+  border-bottom: none;
+}

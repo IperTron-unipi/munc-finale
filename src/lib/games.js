@@ -43,17 +43,17 @@ class ErroreGioco extends Error {
 export function messaggioErroreGioco(code) {
   switch (code) {
     case 'gioco/codice-inesistente':
-      return 'Nessuna partita con questo codice'
+      return 'Nessuna partita con questo codice. Fattelo ridettare da chi ha creato la partita.'
     case 'gioco/gia-iniziata':
-      return 'La partita è già iniziata'
+      return 'La partita è già iniziata: non ci si può più unire.'
     case 'gioco/gia-finita':
-      return 'La partita è già finita'
+      return 'La partita è già finita. Creane una nuova per rigiocare.'
     case 'gioco/codice-non-generato':
       return 'Non riesco a generare un codice partita. Riprova.'
     case 'permission-denied':
-      return 'Operazione non permessa'
+      return 'Questa operazione non ti è permessa. Prova a ricaricare la pagina.'
     case 'unavailable':
-      return 'Nessuna connessione al database. Controlla la rete.'
+      return 'Nessuna connessione. Controlla la rete e riprova.'
     default:
       return 'Qualcosa è andato storto. Riprova.'
   }

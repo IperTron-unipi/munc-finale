@@ -23,10 +23,7 @@ function Finished({ gameId, partita, giocatori }) {
         <h1>
           {hoVinto ? 'Hai vinto!' : `Ha vinto ${partita.winnerName}`}
         </h1>
-        <p>
-          Livello {LIVELLO_MAX} raggiunto. Da qui non si torna indietro: per
-          rigiocare si crea una partita nuova.
-        </p>
+        <p>Livello {LIVELLO_MAX} raggiunto. La partita è chiusa e non si riapre.</p>
       </div>
 
       <h2>Come è finita</h2>
@@ -45,7 +42,7 @@ function Finished({ gameId, partita, giocatori }) {
                 {g.name}
                 {g.uid === partita.hostUid && ' — host'}
                 {g.uid === user.uid && ' — tu'}
-                {g.isFighter && ' ⚔'}
+                {g.isFighter && ' — combattente'}
               </span>
 
               <span className="statistiche">
@@ -67,6 +64,7 @@ function Finished({ gameId, partita, giocatori }) {
         })}
       </ol>
 
+      <Link to="/create">Crea una nuova partita</Link>
       <Link to="/">Torna alla home</Link>
     </section>
   )

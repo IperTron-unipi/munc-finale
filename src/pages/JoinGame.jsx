@@ -31,7 +31,7 @@ function JoinGame() {
     setError(null)
 
     if (!codiceValido(codice)) {
-      setError(`Il codice ha ${LUNGHEZZA_CODICE} caratteri`)
+      setError(`Il codice è di ${LUNGHEZZA_CODICE} caratteri. Controllalo e riprova.`)
       return
     }
 
@@ -69,6 +69,9 @@ function JoinGame() {
           autoCapitalize="characters"
           required
         />
+        <p className="aiuto">
+          {LUNGHEZZA_CODICE} caratteri, te lo passa chi ha creato la partita.
+        </p>
 
         <label htmlFor="nome">Nome del personaggio</label>
         <input
@@ -80,6 +83,9 @@ function JoinGame() {
           autoComplete="off"
           required
         />
+        <p className="aiuto">
+          È il nome con cui ti vedono gli altri sul tabellone.
+        </p>
 
         {error && (
           <p className="errore" role="alert">
@@ -88,11 +94,11 @@ function JoinGame() {
         )}
 
         <button type="submit" disabled={submitting}>
-          {submitting ? 'Attendi…' : 'Entra'}
+          {submitting ? 'Entro nella partita…' : 'Unisciti a una partita'}
         </button>
       </form>
 
-      <Link to="/">Torna indietro</Link>
+      <Link to="/">Torna alla home</Link>
     </section>
   )
 }

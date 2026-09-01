@@ -1,0 +1,19 @@
+/* ---- Partita in corso: conferma di vittoria ---- */
+
+/* Deve interrompere la lettura del tabellone: rosso Porta, dentro la carta. */
+.conferma {
+  margin: 1rem 0;
+  padding: 0.9rem 1rem;
+  background: rgb(157 47 34 / 0.07);
+  border: 1px solid var(--sangue);
+  border-radius: var(--raggio);
+}
+
+.conferma p {
+  margin-top: 0;
+}
+
+.conferma button {
+  min-height: 44px;
+  margin: 0.25rem 0.5rem 0 0;
+}

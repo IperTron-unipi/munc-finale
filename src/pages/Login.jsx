@@ -12,13 +12,17 @@ import { useAuth } from '../context/AuthContext'
 function messaggioErrore(code) {
   switch (code) {
     case 'auth/email-already-in-use':
-      return 'Email già registrata'
+      return 'Questa email è già registrata. Passa ad Accedi.'
     case 'auth/invalid-email':
-      return 'Email non valida'
+      return 'Questa email non è valida. Controlla la scrittura.'
     case 'auth/weak-password':
-      return 'Password troppo corta (minimo 6 caratteri)'
+      return 'La password deve avere almeno 6 caratteri.'
     case 'auth/invalid-credential':
-      return 'Email o password errati'
+      return 'Email o password non corrispondono. Controlla e riprova.'
+    case 'auth/network-request-failed':
+      return 'Nessuna connessione. Controlla la rete e riprova.'
+    case 'auth/too-many-requests':
+      return 'Troppi tentativi. Aspetta qualche minuto e riprova.'
     default:
       return 'Qualcosa è andato storto. Riprova.'
   }
@@ -33,7 +37,7 @@ function Login() {
   const [error, setError] = useState(null)          // null se non c'è niente da dire
   const [submitting, setSubmitting] = useState(false)  // form disabilitato durante la chiamata
 
-  if (loading) return <p className="stato">Caricamento…</p>
+  if (loading) return <p className="stato">Apro la sessione…</p>
   // È anche il redirect dopo l'accesso: user cambia e questa riga scatta.
   if (user) return <Navigate to="/" replace />
 
@@ -104,6 +108,7 @@ function Login() {
           autoComplete={registrazione ? 'new-password' : 'current-password'}
           required
         />
+        {registrazione && <p className="aiuto">Almeno 6 caratteri.</p>}
 
         {registrazione && (
           <>
@@ -126,7 +131,13 @@ function Login() {
         )}
 
         <button type="submit" disabled={submitting}>
-          {submitting ? 'Attendi…' : registrazione ? 'Registrati' : 'Accedi'}
+          {submitting
+            ? registrazione
+              ? 'Registrazione…'
+              : 'Accesso…'
+            : registrazione
+              ? 'Registrati'
+              : 'Accedi'}
         </button>
       </form>
 

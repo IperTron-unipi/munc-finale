@@ -41,6 +41,7 @@ function CreateGame() {
   return (
     <section className="colonna">
       <h1>Crea partita</h1>
+      <p>Ricevi un codice da passare agli altri giocatori.</p>
 
       <form className="colonna" onSubmit={handleSubmit}>
         <label htmlFor="nome">Nome del personaggio</label>
@@ -53,6 +54,9 @@ function CreateGame() {
           autoComplete="off"
           required
         />
+        <p className="aiuto">
+          È il nome con cui ti vedono gli altri sul tabellone.
+        </p>
 
         {error && (
           <p className="errore" role="alert">
@@ -61,11 +65,11 @@ function CreateGame() {
         )}
 
         <button type="submit" disabled={submitting}>
-          {submitting ? 'Attendi…' : 'Crea'}
+          {submitting ? 'Creo la partita…' : 'Crea partita'}
         </button>
       </form>
 
-      <Link to="/">Torna indietro</Link>
+      <Link to="/">Torna alla home</Link>
     </section>
   )
 }

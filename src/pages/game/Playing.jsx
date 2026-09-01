@@ -67,8 +67,7 @@ function Playing({ gameId, partita, giocatori }) {
     <section className="colonna">
       <h1>Partita in corso</h1>
       <p className="stato">
-        Codice <strong>{gameId}</strong> — vince chi arriva a livello{' '}
-        {LIVELLO_MAX}
+        Codice <strong>{gameId}</strong> — si vince a livello {LIVELLO_MAX}.
       </p>
 
       {error && (
@@ -83,27 +82,27 @@ function Playing({ gameId, partita, giocatori }) {
           {secondaConferma ? (
             <>
               <p>
-                <strong>Sicuro?</strong> La partita finisce per tutti e non
-                si torna indietro.
+                <strong>Chiudi la partita per tutti.</strong> La classifica si
+                blocca e non si torna indietro.
               </p>
               <button type="button" onClick={confermaVittoria}>
-                Sì, ho vinto
+                Chiudi, ho vinto
               </button>
               <button type="button" onClick={rifiutaVittoria}>
-                No, annulla
+                Annulla, torno a {LIVELLO_MAX - 1}
               </button>
             </>
           ) : (
             <>
               <p>
-                Sei a livello <strong>{LIVELLO_MAX}</strong>. Confermi la
-                vittoria?
+                Sei a livello <strong>{LIVELLO_MAX}</strong>, il massimo. Hai
+                vinto la partita?
               </p>
               <button type="button" onClick={() => setSecondaConferma(true)}>
                 Ho vinto
               </button>
               <button type="button" onClick={rifiutaVittoria}>
-                Non ancora
+                Non ancora, torno a {LIVELLO_MAX - 1}
               </button>
             </>
           )}
@@ -128,7 +127,7 @@ function Playing({ gameId, partita, giocatori }) {
                 {g.name}
                 {g.uid === partita.hostUid && ' — host'}
                 {sonoIo && ' — tu'}
-                {g.isFighter && ' ⚔'}
+                {g.isFighter && ' — combattente'}
               </span>
 
               {/* Livello e forza pesano uguale: il primo fa vincere la
@@ -207,12 +206,13 @@ function Playing({ gameId, partita, giocatori }) {
         })}
       </ul>
 
-      <p className="stato">
-        Si vince arrivando a livello {LIVELLO_MAX}. Il bonus degli oggetti
-        non fa salire di livello: si somma al livello per dare la forza in
-        combattimento, che serve a battere i mostri. Il flag Combattente
-        vale +1 in combattimento e vince i pareggi — l'app lo segna e
-        basta, i conti li fate al tavolo.
+      <h2>Come si legge</h2>
+      <p className="nota">
+        Il livello fa vincere la partita: si arriva a {LIVELLO_MAX}. Il bonus
+        viene dagli oggetti e non fa salire di livello. Livello più bonus
+        danno la forza, che serve a battere i mostri. Combattente vale +1 in
+        combattimento e vince i pareggi: l'app lo segna, i conti li fate al
+        tavolo.
       </p>
     </section>
   )

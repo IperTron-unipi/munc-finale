@@ -1,0 +1,133 @@
+/* Ogni schermata è una carta di Munchkin appoggiata sul tavolo: pergamena
+    dentro una cornice di cuoio, con la fascia del titolo attaccata al bordo.
+    Base condivisa da tutte le pagine. */
+
+section {
+  position: relative;
+  padding: 1.15rem;
+  margin-bottom: 1rem;
+
+  /* Pergamena in tinta piatta. La grana era un'immagine SVG di rumore
+     stesa su tutta la carta: sporcava il testo e non diceva niente. */
+  background-color: var(--pergamena);
+
+  border: var(--bordo) solid var(--cuoio);
+  border-radius: var(--raggio);
+
+  /* Una sola ombra, con la luce che cade dall'alto: stacca la carta dal
+     tavolo senza farla levitare. */
+  box-shadow: 0 2px 8px rgb(0 0 0 / 0.22);
+}
+
+/* Il titolo è una fascia scura che tocca la cornice su tre lati, come sulle
+   carte vere. I margini negativi valgono il padding della sezione. */
+section > h1 {
+  margin: -1.15rem -1.15rem 1.1rem;
+  padding: 0.7rem 1.15rem 0.55rem;
+
+  color: var(--pergamena);
+  background: var(--cuoio);
+  border-bottom: 1px solid var(--oro);
+
+  /* Chiaro su scuro sembra sempre più stretto e più grasso di quello che
+     è: mezzo punto di spaziatura in più lo rimette in riga. */
+  letter-spacing: 0.02em;
+}
+
+section > h2:first-of-type {
+  margin-top: 0;
+}
+
+.colonna {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Il bottone chiude il form, non è la continuazione dell'ultimo campo:
+   senza questo stacco si tocca per sbaglio uscendo dalla tastiera. */
+form.colonna > button {
+  margin-top: 1.5rem;
+}
+
+/* Stesso stacco per il bottone che chiude una carta senza form (lobby). */
+section.colonna > button {
+  margin-top: 1.25rem;
+}
+
+/* I link in fondo alla carta si staccano dal contenuto. */
+section > a {
+  align-self: flex-start;
+  margin-top: 0.9rem;
+}
+
+/* ---- Stato e messaggi ---- */
+
+/* Attese e note di servizio: presenti, ma non in primo piano. */
+.stato {
+  font-style: italic;
+  color: var(--cuoio-chiaro);
+}
+
+/* Le spiegazioni lunghe restano in tondo: quattro righe di corsivo si
+   leggono male con il telefono in mezzo al tavolo. */
+.nota {
+  margin-top: 0.5rem;
+  font-size: var(--t-minore);
+  color: var(--cuoio-chiaro);
+}
+
+/* Il "Carico…" prima che una carta esista: sta sul tavolo nudo. */
+#root > .stato {
+  padding: 2rem 0;
+  color: var(--pergamena-ombra);
+  letter-spacing: 0.01em;
+  text-align: center;
+}
+
+/* Il codice partita è monospaziato anche dentro una riga di stato: lo
+   stesso dato porta sempre la stessa faccia. Evita anche il corsivo nero,
+   che non è fra i pesi che carico e uscirebbe finto. */
+.stato strong {
+  font-family: var(--mono);
+  font-style: normal;
+  font-size: 0.92em;
+  letter-spacing: 0.06em;
+}
+
+.errore {
+  margin-top: 0.9rem;
+  padding: 0.5rem 0.7rem;
+  color: var(--sangue);
+  font-weight: 500;
+  background: rgb(157 47 34 / 0.07);
+  border: 1px solid var(--sangue);
+  border-radius: var(--raggio);
+}
+
+/* Perché si legga come un link, non come un bottone del form. */
+button.link {
+  padding: 0;
+  min-height: 0;
+  font: inherit;
+  font-weight: 500;
+  letter-spacing: normal;
+  text-transform: none;
+  color: var(--cuoio);
+  background: none;
+  border: none;
+  text-decoration: underline;
+  text-decoration-color: var(--filo);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+button.link:hover {
+  color: var(--sangue);
+  background: none;
+  text-decoration-color: currentColor;
+}
+
+button.link:active {
+  transform: none;
+}

@@ -17,10 +17,13 @@ function Lobby({ gameId, partita, giocatori, sonoHost }) {
     return () => clearTimeout(attesa)
   }, [copiato])
 
+  // navigator.clipboard c'è solo in contesto sicuro: manca su
+  // http://192.168.x.x, cioè proprio quando si prova dal telefono. Senza,
+  // il bottone non compare: un comando che non fa niente è peggio di uno
+  // che manca.
+  const puoiCopiare = Boolean(navigator.clipboard)
+
   async function copiaCodice() {
-    // navigator.clipboard c'è solo in contesto sicuro: manca su
-    // http://192.168.x.x, cioè proprio quando si prova dal telefono.
-    if (!navigator.clipboard) return
     try {
       await navigator.clipboard.writeText(gameId)
       setCopiato(true)
@@ -46,12 +49,14 @@ function Lobby({ gameId, partita, giocatori, sonoHost }) {
     <section className="colonna">
       <h1>Sala d'attesa</h1>
 
-      <p>Condividi questo codice con gli altri giocatori:</p>
+      <p>Passa questo codice agli altri giocatori:</p>
       <p>
         <strong className="codice">{gameId}</strong>{' '}
-        <button type="button" className="link" onClick={copiaCodice}>
-          {copiato ? 'Copiato' : 'Copia'}
-        </button>
+        {puoiCopiare && (
+          <button type="button" className="link" onClick={copiaCodice}>
+            {copiato ? 'Copiato' : 'Copia il codice'}
+          </button>
+        )}
       </p>
 
       <h2>Giocatori ({giocatori.length})</h2>
@@ -65,6 +70,12 @@ function Lobby({ gameId, partita, giocatori, sonoHost }) {
         ))}
       </ul>
 
+      {/* Da solo in lobby non c'è ancora una partita: dirlo evita l'attesa
+          di qualcosa che non sta per succedere. */}
+      {giocatori.length === 1 && (
+        <p className="stato">Sei il primo. Aspetta che gli altri entrino.</p>
+      )}
+
       {error && (
         <p className="errore" role="alert">
           {error}
@@ -73,10 +84,12 @@ function Lobby({ gameId, partita, giocatori, sonoHost }) {
 
       {sonoHost ? (
         <button type="button" onClick={inizia} disabled={submitting}>
-          {submitting ? 'Attendi…' : 'Inizia partita'}
+          {submitting ? 'Avvio la partita…' : 'Inizia partita'}
         </button>
       ) : (
-        <p className="stato">In attesa che l'host faccia iniziare la partita…</p>
+        <p className="stato">
+          Aspetta che l'host avvii la partita. Il tabellone si apre da solo.
+        </p>
       )}
 
       <Link to="/">Torna alla home</Link>

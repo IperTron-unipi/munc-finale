@@ -4,11 +4,12 @@
 :root {
   /* Il tavolo su cui poggiano le carte: marrone scuro, quasi nero. */
   --tavolo: #241a12;
-  --tavolo-alto: #35261a;
 
   /* Il marrone scuro delle cornici e del testo sulla pergamena. */
   --cuoio: #3b2a1a;
   --cuoio-chiaro: #6b5236;
+  /* Filetti e separatori: lo stesso marrone, appena accennato. */
+  --filo: rgb(59 42 26 / 0.22);
 
   /* La pergamena sabbia della faccia della carta. */
   --pergamena: #e9d9b6;
@@ -21,14 +22,55 @@
   /* Il rosso delle carte Porta: solo per errori e vittoria. */
   --sangue: #9d2f22;
 
-  --display: 'Grenze Gotisch', 'Palatino Linotype', Georgia, serif;
-  --testo: 'Alegreya Sans', 'Segoe UI', system-ui, sans-serif;
+  --display: 'Grenze Gotisch', 'Gotica di ripiego', 'Palatino Linotype',
+    Georgia, serif;
+  --testo: 'Alegreya Sans', 'Testo di ripiego', 'Segoe UI', system-ui,
+    sans-serif;
   --mono: 'Space Mono', ui-monospace, 'Courier New', monospace;
 
-  --bordo: 3px;
+  /* La scala dei corpi: otto ruoli, ognuno con un mestiere suo. Prima erano
+     quattordici valori, e sette stavano ammassati fra 0.65 e 0.95rem a fare
+     tutti lo stesso lavoro. */
+  --t-vittoria: 2.1rem;         /* l'unico titolo letto dall'altro capo del tavolo */
+  --t-titolo: 1.8rem;           /* titolo di schermata */
+  --t-dato: 1.5rem;             /* numero e codice: quello che si va a cercare */
+  --t-voce: 1.25rem;            /* azioni della home, cifre dei comandi, posizione */
+  --t-testo: 1.0625rem;         /* corpo */
+  --t-minore: 0.9rem;           /* testo che sta indietro: note, aiuti, bottoni */
+  --t-etichetta: 0.8rem;        /* maiuscolette fuori dal tabellone */
+  --t-etichetta-fitta: 0.7rem;  /* maiuscolette dentro la riga, dove lo spazio manca */
+
+  /* Le maiuscolette hanno bisogno di aria. Le sezioni ne prendono un po'
+     di più: distingue il ruolo senza cambiare il corpo. */
+  --sp-etichetta: 0.08em;
+  --sp-sezione: 0.12em;
+
+  --bordo: 2px;
   --raggio: 3px;
 
   color-scheme: light;
+}
+
+/* Le facce di ripiego, con le metriche riportate a quelle vere. Senza,
+   allo swap il testo saltava: sulla copy vera dell app Palatino è il 20% più
+   largo di Grenze Gotisch, e Segoe UI il 15% più largo di Alegreya Sans.
+   I numeri qui sotto vengono da una misura, non da una stima. */
+@font-face {
+  font-family: 'Testo di ripiego';
+  src: local('Segoe UI'), local('Helvetica Neue'), local('Arial');
+  size-adjust: 86.75%;
+  ascent-override: 92.2%;
+  descent-override: 23.1%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: 'Gotica di ripiego';
+  src: local('Palatino Linotype'), local('Palatino'), local('Georgia');
+  size-adjust: 83.7%;
+  ascent-override: 131.4%;
+  descent-override: 45.4%;
+  line-gap-override: 0%;
 }
 
 *,
@@ -43,18 +85,17 @@ body {
   min-height: 100dvh;
 
   font-family: var(--testo);
-  font-size: 1.0625rem;
+  font-size: var(--t-testo);
   line-height: 1.55;
   color: var(--cuoio);
 
-  /* La luce cade dall'alto sul tavolo, i bordi restano in ombra. */
+  /* Alegreya Sans esce con le cifre minuscole: in un segnapunti i numeri
+     devono stare alti come le maiuscole e larghi uguale fra loro. */
+  font-variant-numeric: lining-nums tabular-nums;
+
+  /* Il tavolo è una tinta piatta: il vecchio alone al centro faceva
+     sembrare la pagina illuminata da un faretto. */
   background-color: var(--tavolo);
-  background-image: radial-gradient(
-    120% 70% at 50% 0%,
-    var(--tavolo-alto) 0%,
-    var(--tavolo) 65%
-  );
-  background-attachment: fixed;
 }
 
 /* La colonna in cui vive tutta l'app: una carta larga quanto un telefono,
@@ -72,8 +113,8 @@ h1 {
   margin: 0;
   font-family: var(--display);
   font-weight: 700;
-  font-size: 1.9rem;
-  line-height: 1.1;
+  font-size: var(--t-titolo);
+  line-height: 1.15;
   letter-spacing: 0.01em;
 }
 
@@ -82,13 +123,14 @@ h2 {
   margin: 1.75rem 0 0.4rem;
   padding-bottom: 0.3rem;
 
-  font-size: 0.85rem;
+  font-size: var(--t-etichetta);
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.16em;
+  letter-spacing: var(--sp-sezione);
   color: var(--cuoio-chiaro);
 
-  border-bottom: 2px solid var(--oro);
+  /* Un filo, non una barra dorata: l'oro resta all'host e al vincitore. */
+  border-bottom: 1px solid var(--filo);
 }
 
 p {
@@ -103,10 +145,17 @@ strong {
 
 label {
   margin-top: 0.9rem;
-  font-size: 0.8rem;
+  font-size: var(--t-etichetta);
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.12em;
+  letter-spacing: var(--sp-etichetta);
+  color: var(--cuoio-chiaro);
+}
+
+/* La riga sotto al campo che dice il formato prima di sbagliare. */
+.aiuto {
+  margin: 0.35rem 0 0;
+  font-size: var(--t-minore);
   color: var(--cuoio-chiaro);
 }
 
@@ -120,12 +169,9 @@ input[type='password'] {
   font: inherit;
   color: var(--cuoio);
 
-  background: #f3e8cd;
-  border: 2px solid var(--cuoio);
+  background: #f4ebd8;
+  border: 1px solid var(--cuoio);
   border-radius: var(--raggio);
-
-  /* Incavo appena accennato: il campo sprofonda nella pergamena. */
-  box-shadow: inset 0 2px 3px rgb(59 42 26 / 0.18);
 }
 
 input[type='checkbox'] {
@@ -137,60 +183,67 @@ input[type='checkbox'] {
 /* ---- Bottoni ---- */
 
 button {
-  padding: 0.55rem 1.1rem;
+  padding: 0.6rem 1.1rem;
   min-height: 44px;
 
   font-family: var(--testo);
-  font-size: 0.95rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
+  font-size: var(--t-minore);
+  font-weight: 500;
+  letter-spacing: var(--sp-etichetta);
   text-transform: uppercase;
+  /* Il `font` della UA azzera font-variant-numeric, e qui imposto i
+     longhand uno per uno: senza questa riga il bottone torna alle cifre
+     minuscole e il 9 di "torno a 9" scende sotto la riga. */
+  font-variant-numeric: lining-nums tabular-nums;
 
   color: var(--pergamena);
   background: var(--cuoio);
-  border: 2px solid var(--cuoio);
+  border: 1px solid var(--cuoio);
   border-radius: var(--raggio);
   cursor: pointer;
 
-  /* Lo spessore che il bottone perde quando lo premi, qui sotto. */
-  box-shadow: 0 3px 0 rgb(36 26 18 / 0.55);
-  transition: transform 80ms, box-shadow 80ms;
+  transition: background-color 120ms ease-out, transform 120ms ease-out;
 }
 
 button:hover {
   background: #4b3623;
 }
 
+/* L'unico movimento dell'app: il tocco deve rispondere anche quando il
+   dito copre il bottone. */
 button:active {
-  transform: translateY(3px);
-  box-shadow: 0 0 0 rgb(36 26 18 / 0.55);
+  transform: translateY(1px);
 }
 
 button:disabled {
   opacity: 0.45;
   cursor: not-allowed;
   transform: none;
-  box-shadow: 0 3px 0 rgb(36 26 18 / 0.3);
 }
 
 /* ---- Link ---- */
 
 a {
   color: var(--cuoio);
-  text-decoration-color: var(--oro);
-  text-decoration-thickness: 2px;
+  text-decoration-color: var(--filo);
+  text-decoration-thickness: 1px;
   text-underline-offset: 3px;
   font-weight: 500;
 }
 
 a:hover {
   color: var(--sangue);
+  text-decoration-color: currentColor;
 }
 
-/* Un anello unico per tutto ciò che prende il fuoco da tastiera. */
+/* Un anello unico per tutto ciò che prende il fuoco da tastiera, a due
+   colori di proposito: sulla pergamena si stacca il cuoio, sul tavolo scuro
+   si stacca l ottone. Con il solo oro pieno il contorno stava a 2.4:1
+   contro la pergamena, sotto il 3:1 che serve a un indicatore. */
 :where(a, button, input, [tabindex]):focus-visible {
-  outline: 3px solid var(--oro);
-  outline-offset: 2px;
+  outline: 2px solid var(--cuoio);
+  outline-offset: 3px;
+  box-shadow: 0 0 0 3px var(--oro-acceso);
 }
 
 /* Chi ha chiesto meno movimento non deve vedere il bottone affondare. */
