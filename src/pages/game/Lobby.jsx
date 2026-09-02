@@ -1,16 +1,21 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
-import { iniziaPartita, messaggioErroreGioco } from '../../lib/games'
+import { useInvio } from '../../hooks/useInvio'
+import Errore from '../../components/Errore'
+import { iniziaPartita } from '../../lib/games'
 
-function Lobby({ gameId, partita, giocatori, sonoHost }) {
+// La sala d'attesa: mostra il codice da passare agli altri e, all'host,
+// il bottone per iniziare. Props { gameId, partita, giocatori } — vedi Game.jsx.
+function Lobby({ gameId, partita, giocatori }) {
   const { user } = useAuth()
   const [copiato, setCopiato] = useState(false)
-  const [error, setError] = useState(null)
-  const [submitting, setSubmitting] = useState(false)
+  const { error, submitting, invia } = useInvio()
 
-  // "Copiato" torna da solo a "Copia" dopo due secondi.
-  // Il clearTimeout serve se si esce dalla pagina prima che scada.
+  const sonoHost = partita.hostUid === user.uid
+
+  // "Copiato" torna da solo a "Copia" dopo due secondi. Il clearTimeout
+  // serve se si esce dalla pagina prima che scada.
   useEffect(() => {
     if (!copiato) return
     const attesa = setTimeout(() => setCopiato(false), 2000)
@@ -18,9 +23,8 @@ function Lobby({ gameId, partita, giocatori, sonoHost }) {
   }, [copiato])
 
   // navigator.clipboard c'è solo in contesto sicuro: manca su
-  // http://192.168.x.x, cioè proprio quando si prova dal telefono. Senza,
-  // il bottone non compare: un comando che non fa niente è peggio di uno
-  // che manca.
+  // http://192.168.x.x, cioè proprio quando si prova dal telefono. Lì il
+  // bottone non compare, invece di non fare niente.
   const puoiCopiare = Boolean(navigator.clipboard)
 
   async function copiaCodice() {
@@ -32,17 +36,10 @@ function Lobby({ gameId, partita, giocatori, sonoHost }) {
     }
   }
 
-  async function inizia() {
-    setError(null)
-    setSubmitting(true)
-    try {
-      await iniziaPartita(gameId)
-      // Nessun navigate: l'update cambia status, onSnapshot lo rimanda a
-      // tutti e Game.jsx passa alla vista Playing su ogni dispositivo.
-    } catch (err) {
-      setError(messaggioErroreGioco(err.code))
-      setSubmitting(false)
-    }
+  // Nessun navigate: l'update cambia status, onSnapshot lo rimanda a tutti
+  // e Game.jsx passa alla vista Playing su ogni dispositivo.
+  function inizia() {
+    invia(() => iniziaPartita(gameId))
   }
 
   return (
@@ -70,17 +67,12 @@ function Lobby({ gameId, partita, giocatori, sonoHost }) {
         ))}
       </ul>
 
-      {/* Da solo in lobby non c'è ancora una partita: dirlo evita l'attesa
-          di qualcosa che non sta per succedere. */}
+      {/* Da solo in lobby non c'è ancora una partita. */}
       {giocatori.length === 1 && (
         <p className="stato">Sei il primo. Aspetta che gli altri entrino.</p>
       )}
 
-      {error && (
-        <p className="errore" role="alert">
-          {error}
-        </p>
-      )}
+      <Errore messaggio={error} />
 
       {sonoHost ? (
         <button type="button" onClick={inizia} disabled={submitting}>

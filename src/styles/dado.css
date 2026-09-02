@@ -1,0 +1,94 @@
+/* ---- Dado ----
+   Il bottone sta nella fascia del titolo di Playing, il popup nel top layer
+   del browser. */
+
+/* La fascia diventa una riga: il titolo a sinistra, il dado a destra. Solo
+   qui, perché gli altri h1 dell'app sono testo e basta. */
+h1.con-dado {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+/* Sul cuoio scuro un bottone pieno di cuoio sparirebbe: qui è un contorno
+   d'ottone, come le altre cose che sulla fascia devono farsi vedere. */
+.dado {
+  flex: none;
+  min-height: 44px;
+  min-width: 52px;
+  padding: 0 0.7rem;
+
+  font-family: var(--mono);
+  font-size: var(--t-minore);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: none;
+
+  color: var(--oro-acceso);
+  background: none;
+  border: 1px solid var(--oro);
+}
+
+.dado:hover {
+  color: var(--tavolo);
+  background: var(--oro-acceso);
+  border-color: var(--oro-acceso);
+}
+
+/* ---- Il popup ---- */
+
+/* Una carta come le altre, appoggiata sopra a tutto. */
+.dialogo-dado {
+  margin: auto;
+  padding: 1.15rem;
+  width: min(20rem, calc(100vw - 2rem));
+
+  color: var(--cuoio);
+  background: var(--pergamena);
+  border: var(--bordo) solid var(--cuoio);
+  border-radius: var(--raggio);
+  box-shadow: 0 6px 20px rgb(0 0 0 / 0.35);
+}
+
+.dialogo-dado::backdrop {
+  background: rgb(36 26 18 / 0.72);
+}
+
+.dialogo-dado h2 {
+  margin: 0;
+  border-bottom: none;
+  text-align: center;
+}
+
+/* Il numero è tutto: si legge dall'altro capo del tavolo, come il titolo
+   della schermata di vittoria. */
+.risultato {
+  margin: 0.6rem 0 1.1rem;
+  text-align: center;
+}
+
+.risultato strong {
+  display: block;
+  font-family: var(--display);
+  font-size: 4rem;
+  line-height: 1;
+
+  /* Il numero entra a ogni apertura senza bisogno di una chiave in React:
+     un <dialog> chiuso sta a display:none, e uscendone l'animazione riparte
+     da sola. */
+  animation: esce-il-dado 260ms ease-out;
+}
+
+@keyframes esce-il-dado {
+  from {
+    opacity: 0;
+    transform: scale(0.82);
+  }
+}
+
+/* Unico comando del popup, e chiude: sta al centro come il numero. */
+.dialogo-dado > button {
+  display: block;
+  margin-inline: auto;
+}

@@ -17,19 +17,18 @@
   border-radius: var(--raggio);
 }
 
-/* L'elenco di chi è entrato: righe, non pallini. */
-section > ul:not(.tabellone):not(.classifica) {
-  list-style: none;
-  padding: 0;
-  margin: 0.25rem 0 0;
+/* L'elenco di chi è entrato. Il :not tiene fuori il tabellone, che ha le sue
+   righe; .classifica non serve nominarla, è un <ol>. */
+section > ul:not(.tabellone) {
+  margin-top: 0.25rem;
 }
 
-section > ul:not(.tabellone):not(.classifica) li {
+section > ul:not(.tabellone) li {
   padding: 0.5rem 0.6rem;
   border-bottom: 1px solid var(--filo);
 }
 
 /* Il filo separa le righe fra loro: sotto l'ultima non separa niente. */
-section > ul:not(.tabellone):not(.classifica) li:last-child {
+section > ul:not(.tabellone) li:last-child {
   border-bottom: none;
 }

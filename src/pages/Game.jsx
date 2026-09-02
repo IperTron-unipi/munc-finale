@@ -4,10 +4,13 @@ import { usePartita } from '../hooks/usePartita'
 import { useNotificaVittoria } from '../hooks/useNotificaVittoria'
 import { messaggioErroreGioco } from '../lib/games'
 import AvvisoNotifiche from '../components/AvvisoNotifiche'
+import Errore from '../components/Errore'
 import Lobby from './game/Lobby'
 import Playing from './game/Playing'
 import Finished from './game/Finished'
 
+// Il guscio della partita: tiene i listener e sceglie la vista secondo lo
+// status. Passa a tutte e tre le stesse props { gameId, partita, giocatori }.
 function Game() {
   const { gameId } = useParams()
   const { user } = useAuth()
@@ -15,7 +18,7 @@ function Game() {
 
   // Qui e non dentro le viste: quando qualcuno vince si passa da `Playing`
   // a `Finished`, e l'hook si smonterebbe proprio nel momento che deve
-  // riconoscere. Inoltre gli hook vanno chiamati prima dei return qui sotto.
+  // riconoscere.
   useNotificaVittoria(gameId, partita, user.uid)
 
   if (loading) return <p className="stato">Carico la partita…</p>
@@ -23,31 +26,27 @@ function Game() {
   if (error) {
     return (
       <section className="colonna">
-        <p className="errore" role="alert">{messaggioErroreGioco(error)}</p>
+        <Errore messaggio={messaggioErroreGioco(error)} />
         <Link to="/">Torna alla home</Link>
       </section>
     )
   }
 
-  // Il codice nell'URL non corrisponde a nessuna partita. Senza questo
-  // controllo si entrerebbe in una lobby fantasma: vuota, con un codice
-  // che non si può condividere perché non esiste niente dall'altra parte.
+  // Il codice nell'URL non corrisponde a nessuna partita: senza questo
+  // controllo si entrerebbe in una lobby fantasma.
   if (partita === null) {
     return (
       <section className="colonna">
         <h1>Partita non trovata</h1>
-        <p className="errore" role="alert">
-          {messaggioErroreGioco('gioco/codice-inesistente')}
-        </p>
+        <Errore messaggio={messaggioErroreGioco('gioco/codice-inesistente')} />
         <Link to="/join">Prova con un altro codice</Link>
         <Link to="/">Torna alla home</Link>
       </section>
     )
   }
 
-  // La partita esiste ma tu non ci sei dentro: sei arrivato da un link
-  // condiviso senza passare da /join. Vedresti la lobby degli altri
-  // senza comparire nella lista, che è il modo peggiore di scoprirlo.
+  // Arrivato da un link condiviso senza passare da /join: vedrebbe la lobby
+  // degli altri senza comparire nella lista.
   const sonoDentro = giocatori.some((g) => g.uid === user.uid)
   if (!sonoDentro) {
     return (
@@ -71,12 +70,7 @@ function Game() {
       {/* A partita finita non c'è più niente da annunciare. */}
       {partita.status !== 'finished' && <AvvisoNotifiche />}
 
-      <Vista
-        gameId={gameId}
-        partita={partita}
-        giocatori={giocatori}
-        sonoHost={partita.hostUid === user.uid}
-      />
+      <Vista gameId={gameId} partita={partita} giocatori={giocatori} />
     </>
   )
 }

@@ -12,13 +12,17 @@ Le app esistenti per Munchkin sono segnapunti locali: un solo dispositivo che pa
 
 ## Il gioco, in tre righe
 
-Ogni personaggio ha un nome, due statistiche indipendenti — il **livello** da 1 a 10 e il **bonus** degli oggetti, che parte da 0 — e un flag **Combattente** (+1 invisibile in combattimento, vince anche i pareggi).
+Ogni personaggio ha un nome, due statistiche indipendenti — il **livello** da 1 a 10 e il **bonus** degli oggetti, che parte da 0 — e un flag **Combattente**, che non porta punti ma vince i pareggi in combattimento.
 
 **Si vince arrivando a livello 10.** Il bonus non fa salire di livello: si somma al livello per dare la **forza in combattimento**, che serve a battere i mostri e non a vincere la partita.
 
 Chi arriva a livello 10 conferma la vittoria due volte, la partita si chiude e tutti gli altri ricevono una notifica. Se non conferma, il livello torna a 9 e si continua.
 
-Il flag Combattente è solo un booleano: il combattimento lo risolvono i giocatori al tavolo, l'app non calcola nulla.
+Il combattimento è una schermata condivisa: uno lo apre, **un solo** altro giocatore può entrare in aiuto, e dall'altra parte si mettono i mostri. Il livello del mostro si sceglie prima che entri e poi non si tocca; quello che si muove durante lo scontro è il bonus, che ognuno — mostro o giocatore in campo — ha per conto suo e può essere un malus. Ogni mostro si può sdoppiare, e il ×2 prende livello e bonus insieme.
+
+Due regole sul conto. **Nessuno scende sotto forza 1**, per quanto grosso sia il malus, e l'arrotondamento si fa su ciascuno prima di sommare: due giocatori a forza 8, entrambi con −10, fanno 2 e non 1. E il **Combattente non porta punti**: il suo unico effetto è che a parità di forza vince la squadra, non i mostri.
+
+Il livello se lo alza chi ha vinto, dai comandi della propria riga. Nella fascia del titolo c'è un **d6** per chi deve fuggire e non ha il dado a portata di mano: il risultato è di chi lo tira e non viene sincronizzato, come un dado vero appoggiato davanti a sé.
 
 ## Stack
 
@@ -109,14 +113,21 @@ src/
     firebase.js            app, auth, db
     gameCode.js            genera e normalizza il codice partita
     games.js               le scritture su Firestore
+    combat.js              il combattimento: totali, verdetto, scritture
     notifiche.js           permesso e notifica locale
   context/                 AuthProvider: onAuthStateChanged → { user, loading }
   hooks/
     usePartita.js          i due onSnapshot di una partita
+    useCombattimento.js    lo snapshot del combattimento aperto
     useNotificaVittoria.js notifica alla transizione a finished
+    useInvio.js            scrivi, poi cambia schermata: error e submitting
   components/
     RequireAuth.jsx        la guardia delle route protette
     AvvisoNotifiche.jsx    il bottone che chiede il permesso
+    Combattimento.jsx      il pannello dello scontro
+    Dado.jsx               il d6 nella fascia del titolo, e il suo popup
+    Errore.jsx             la riga rossa con role="alert"
+    Passo.jsx              i +/− di un valore: tabellone e combattimento
   pages/                   Login, Home, CreateGame, JoinGame, Game
 public/
   sw.js                    service worker: cache, pagina offline, notifica
@@ -142,9 +153,14 @@ games/{codice}                    il codice di 6 caratteri È l'id del documento
 
 games/{codice}/players/{uid}      l'uid dell'utente autenticato È l'id
   name, level, bonus, isFighter, joinedAt
+
+games/{codice}/combat/corrente    id fisso: si combatte uno scontro per volta
+  sfidanteUid, aiutanteUid, apertoIl
+  modificatori: { [uid]: numero }   il malus di chi è in campo, uno per uno
+  mostri: { [id]: { nome, livello, bonus, doppio, ordine } }
 ```
 
-Il codice come id significa che unirsi a una partita è un `getDoc` diretto: nessuna query, nessun indice, e l'unicità la garantisce Firestore.
+Il codice come id significa che unirsi a una partita è un `getDoc` diretto: nessuna query, nessun indice, e l'unicità la garantisce Firestore. Stesso motivo per l'id fisso del combattimento: il documento c'è mentre si combatte e sparisce alla chiusura, quindi "c'è uno scontro aperto?" non è una query ma l'esistenza di un documento.
 
 ## Le route
 
@@ -180,8 +196,13 @@ _Da aggiungere: i PNG vanno messi in `docs/img/`, poi si toglie il commento qui 
 | 5. Vittoria e notifica | fatta |
 | 6. PWA installabile e offline | fatta |
 | 7. Deploy | fatta |
+| 8. Combattimenti | fatta |
 
 ## Note
+
+**Il combattimento è l'unico documento che scrivono tutti.** Ovunque altrove vale "ognuno scrive solo il proprio personaggio", e le Security Rules lo impongono. Uno scontro non può funzionare così: le carte che lo modificano le gioca chiunque sia al tavolo. Da qui due conseguenze nel codice. Mostri e malus stanno in due **mappe** e non in array, così due giocatori che toccano righe diverse nello stesso istante scrivono su campi diversi e non si sovrascrivono. E i bottoni mandano un **delta** con `increment`, non il valore assoluto come nel resto dell'app: se due persone premono `+` insieme, il server somma entrambe.
+
+**Il livello del mostro non sta su Firestore finché il mostro non esiste.** Si sceglie nel modulo, accanto al nome, ed è uno `useState` del componente: è un campo di un form, non un dato della partita. Da lì in poi il mostro si corregge dal bonus, che è l'unica sua statistica che cambia durante lo scontro.
 
 **L'app è installabile e ha un solo service worker.** Manifest e worker sono scritti a mano, senza `vite-plugin-pwa`: il worker delle notifiche esisteva già, e un secondo worker sullo stesso `scope` non si affiancherebbe al primo — lo sostituirebbe. Un file solo evita il problema in partenza.
 

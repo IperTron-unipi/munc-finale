@@ -1,23 +1,20 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import {
-  creaPartita,
-  messaggioErroreGioco,
-  LUNGHEZZA_NOME_MAX,
-} from '../lib/games'
+import { useInvio } from '../hooks/useInvio'
+import Errore from '../components/Errore'
+import { creaPartita, LUNGHEZZA_NOME_MAX } from '../lib/games'
 
+// Crea la partita e porta dritto alla sua lobby. Nessuna prop, è una route.
 function CreateGame() {
   const { user } = useAuth()          // c'è di sicuro: route dietro RequireAuth
   const navigate = useNavigate()
 
-  const [nome, setNome] = useState('')      // del personaggio, non dell'account
-  const [error, setError] = useState(null)  // null se non c'è niente da dire
-  const [submitting, setSubmitting] = useState(false)  // scrittura in volo
+  const [nome, setNome] = useState('')  // del personaggio, non dell'account
+  const { error, setError, submitting, invia } = useInvio()
 
-  async function handleSubmit(event) {
+  function handleSubmit(event) {
     event.preventDefault()
-    setError(null)
 
     const nomePulito = nome.trim()
     if (nomePulito === '') {
@@ -25,17 +22,12 @@ function CreateGame() {
       return
     }
 
-    setSubmitting(true)
-    try {
+    invia(async () => {
       const codice = await creaPartita(user.uid, nomePulito)
       // replace: senza, il tasto "indietro" tornerebbe qui e un secondo
       // invio creerebbe una partita in più.
       navigate(`/game/${codice}`, { replace: true })
-    } catch (err) {
-      setError(messaggioErroreGioco(err.code))
-      setSubmitting(false)
-    }
-    // Nessun finally: se è andata bene il componente è già smontato.
+    })
   }
 
   return (
@@ -58,11 +50,7 @@ function CreateGame() {
           È il nome con cui ti vedono gli altri sul tabellone.
         </p>
 
-        {error && (
-          <p className="errore" role="alert">
-            {error}
-          </p>
-        )}
+        <Errore messaggio={error} />
 
         <button type="submit" disabled={submitting}>
           {submitting ? 'Creo la partita…' : 'Crea partita'}

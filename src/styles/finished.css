@@ -51,31 +51,14 @@
   color: var(--cuoio-chiaro);
 }
 
+/* Fondo e cornice li dà tabellone.css insieme alla propria riga: qui resta
+   la scala, che per il vincitore è piena e dorata — il tesoro, non la fatica. */
 .classifica .vincitore {
-  font-weight: 700;
-  margin: 0.3rem 0;
-  background: rgb(184 132 43 / 0.13);
-  border: 1px solid var(--oro);
-  border-radius: var(--raggio);
+  --riempimento: var(--oro);
 }
 
 .classifica .vincitore::before {
   color: var(--cuoio);
-}
-
-/* La scala del vincitore è piena e dorata: il tesoro, non la fatica. */
-.classifica .vincitore::after {
-  background-image:
-    repeating-linear-gradient(
-      90deg,
-      transparent 0 calc(10% - 1px),
-      rgb(59 42 26 / 0.4) calc(10% - 1px) 10%
-    ),
-    linear-gradient(
-      90deg,
-      var(--oro) 0 calc(var(--livello, 0) * 10%),
-      transparent 0
-    );
 }
 
 .classifica .vincitore .nome::after {

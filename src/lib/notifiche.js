@@ -1,10 +1,14 @@
 // Notifiche locali, non push: il piano gratuito di Firebase non ha Cloud
-// Functions. Ogni giocatore ha già il listener sulla partita, quindi vede
-// da sé il passaggio a `finished` e si mostra la notifica da solo.
-// Limite: arriva solo con l'app aperta o in secondo piano, non ad app chiusa.
+// Functions. Ogni giocatore ha già il listener sulla partita, quindi vede da
+// sé il passaggio a `finished` e si mostra la notifica da solo. Limite:
+// arriva solo con l'app aperta o in secondo piano, non ad app chiusa.
 //
-// Il resto del codice non tocca mai `Notification` o `navigator`: i casi
-// che cambiano da browser a browser stanno tutti qui.
+// Il resto del codice non tocca mai `Notification` o `navigator`: i casi che
+// cambiano da browser a browser stanno tutti qui.
+//
+// Tipi
+//   permesso 'granted' | 'denied' | 'default' | 'unsupported'
+//   opzioni  le NotificationOptions del browser: { body, tag, data, … }
 
 const PERCORSO_WORKER = '/sw.js'
 
@@ -15,8 +19,8 @@ export const NOTIFICHE_SUPPORTATE =
   'Notification' in window &&
   'serviceWorker' in navigator
 
-// Come `Notification.permission`, più `unsupported` quando l'API non c'è:
-// chi chiama legge un valore solo.
+// () -> permesso. Come `Notification.permission`, più `unsupported` quando
+// l'API non c'è: chi chiama legge un valore solo.
 export function permessoNotifiche() {
   return NOTIFICHE_SUPPORTATE ? Notification.permission : 'unsupported'
 }
@@ -28,8 +32,8 @@ export function registraServiceWorker() {
   navigator.serviceWorker.register(PERCORSO_WORKER).catch(() => {})
 }
 
-// Chiede il permesso, una volta sola. Va chiamata da un gesto dell'utente:
-// Firefox e Safari ignorano la richiesta automatica.
+// () -> Promise<permesso>. Va chiamata da un gesto dell'utente: Firefox e
+// Safari ignorano la richiesta automatica.
 export async function chiediPermessoNotifiche() {
   if (!NOTIFICHE_SUPPORTATE) return 'unsupported'
   // `granted` e `denied` sono definitivi: il prompt non ricompare.
@@ -37,8 +41,8 @@ export async function chiediPermessoNotifiche() {
   return await Notification.requestPermission()
 }
 
-// Mostra una notifica. Restituisce true se è comparsa davvero, e non
-// lancia mai: una notifica persa non deve rompere la schermata di vittoria.
+// (titolo: string, opzioni) -> Promise<boolean>, vero se è comparsa davvero.
+// Non lancia mai: una notifica persa non deve rompere la vittoria.
 export async function mostraNotifica(titolo, opzioni = {}) {
   if (permessoNotifiche() !== 'granted') return false
 
@@ -53,8 +57,8 @@ export async function mostraNotifica(titolo, opzioni = {}) {
       return true
     }
 
-    // Ripiego, per i primi istanti in cui il worker non è ancora attivo.
-    //anche se non funziona su Android, almeno su desktop e iOS si potrebbe vede la notifica.
+    // Ripiego per i primi istanti in cui il worker non è ancora attivo: su
+    // Android non funziona, ma su desktop e iOS la notifica si vede.
     new Notification(titolo, opzioni)
     return true
   } catch {

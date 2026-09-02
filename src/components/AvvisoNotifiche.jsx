@@ -1,9 +1,10 @@
 import { useState } from 'react'
 import { chiediPermessoNotifiche, permessoNotifiche } from '../lib/notifiche'
 
-// Il bottone che chiede il permesso di notificare. Compare all'ingresso in
-// partita, non all'avvio dell'app: chiesto troppo presto lo negano tutti, e
-// `denied` non si può ritirare.
+// Il bottone che chiede il permesso di notificare. Nessuna prop: legge da sé
+// il permesso ('granted' | 'denied' | 'default' | 'unsupported') e rende una
+// riga diversa per ciascuno. Compare all'ingresso in partita e non all'avvio:
+// chiesto troppo presto lo negano tutti, e `denied` non si può ritirare.
 function AvvisoNotifiche() {
   const [permesso, setPermesso] = useState(permessoNotifiche)
 

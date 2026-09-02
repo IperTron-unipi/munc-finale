@@ -1,6 +1,7 @@
 import { Navigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 
+// Avvolge le route private: rende `children` solo a sessione aperta.
 function RequireAuth({ children }) {
   const { user, loading } = useAuth()
 

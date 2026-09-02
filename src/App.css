@@ -6,5 +6,7 @@
 @import './styles/lobby.css';     /* Lobby: codice partita, elenco giocatori. */
 @import './styles/tabellone.css'; /* Riga giocatore, condivisa da Playing e Finished. */
 @import './styles/playing.css';   /* Playing: conferma di vittoria. */
+@import './styles/combattimento.css'; /* Combattimento: schieramento, mostri, verdetto. */
 @import './styles/finished.css';  /* Finished: podio e classifica. */
 @import './styles/avviso.css';    /* AvvisoNotifiche. */
+@import './styles/dado.css';      /* Dado: bottone nella fascia del titolo e popup. */

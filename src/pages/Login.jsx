@@ -6,42 +6,44 @@ import {
 } from 'firebase/auth'
 import { auth } from '../lib/firebase'
 import { useAuth } from '../context/AuthContext'
+import Errore from '../components/Errore'
 
-// Traduce i code di Firebase. Il default copre i casi non previsti:
-// il form non resta mai muto.
-function messaggioErrore(code) {
-  switch (code) {
-    case 'auth/email-already-in-use':
-      return 'Questa email è già registrata. Passa ad Accedi.'
-    case 'auth/invalid-email':
-      return 'Questa email non è valida. Controlla la scrittura.'
-    case 'auth/weak-password':
-      return 'La password deve avere almeno 6 caratteri.'
-    case 'auth/invalid-credential':
-      return 'Email o password non corrispondono. Controlla e riprova.'
-    case 'auth/network-request-failed':
-      return 'Nessuna connessione. Controlla la rete e riprova.'
-    case 'auth/too-many-requests':
-      return 'Troppi tentativi. Aspetta qualche minuto e riprova.'
-    default:
-      return 'Qualcosa è andato storto. Riprova.'
-  }
+// { [code: string]: string } — i code di Firebase Auth tradotti.
+const MESSAGGI = {
+  __proto__: null,
+  'auth/email-already-in-use': 'Questa email è già registrata. Passa ad Accedi.',
+  'auth/invalid-email': 'Questa email non è valida. Controlla la scrittura.',
+  'auth/weak-password': 'La password deve avere almeno 6 caratteri.',
+  'auth/invalid-credential': 'Email o password non corrispondono. Controlla e riprova.',
+  'auth/network-request-failed': 'Nessuna connessione. Controlla la rete e riprova.',
+  'auth/too-many-requests': 'Troppi tentativi. Aspetta qualche minuto e riprova.',
 }
 
+// (code: string) -> string. Il fallback copre i casi non previsti: il form
+// non resta mai muto.
+function messaggioErrore(code) {
+  return MESSAGGI[code] ?? 'Qualcosa è andato storto. Riprova.'
+}
+
+// Accesso e registrazione nella stessa schermata: cambia il verbo e compare
+// la conferma della password. Nessuna prop, è una route.
 function Login() {
-  const { user, loading } = useAuth()               // null se non autenticato
-  const [mode, setMode] = useState('accedi')        // 'accedi' o 'registrati'
+  const { user, loading } = useAuth()               // user: null se non autenticato
+  const [mode, setMode] = useState('accedi')        // 'accedi' | 'registrati'
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [passwordConfirm, setPasswordConfirm] = useState('')  // solo in registrazione
-  const [error, setError] = useState(null)          // null se non c'è niente da dire
-  const [submitting, setSubmitting] = useState(false)  // form disabilitato durante la chiamata
+  const [error, setError] = useState(null)          // string | null
+  const [submitting, setSubmitting] = useState(false)  // spegne il bottone
 
   if (loading) return <p className="stato">Apro la sessione…</p>
   // È anche il redirect dopo l'accesso: user cambia e questa riga scatta.
   if (user) return <Navigate to="/" replace />
 
   const registrazione = mode === 'registrati'
+  // Il verbo della schermata: dà il titolo, il bottone e la sua attesa.
+  const azione = registrazione ? 'Registrati' : 'Accedi'
+  const azioneInCorso = registrazione ? 'Registrazione…' : 'Accesso…'
 
   function cambiaModalita() {
     setMode(registrazione ? 'accedi' : 'registrati')
@@ -85,7 +87,7 @@ function Login() {
   return (
     <section className="colonna">
       <h1>Munchkin Tracker</h1>
-      <h2>{registrazione ? 'Registrati' : 'Accedi'}</h2>
+      <h2>{azione}</h2>
 
       <form className="colonna" onSubmit={handleSubmit}>
         <label htmlFor="email">Email</label>
@@ -124,20 +126,10 @@ function Login() {
           </>
         )}
 
-        {error && (
-          <p className="errore" role="alert">
-            {error}
-          </p>
-        )}
+        <Errore messaggio={error} />
 
         <button type="submit" disabled={submitting}>
-          {submitting
-            ? registrazione
-              ? 'Registrazione…'
-              : 'Accesso…'
-            : registrazione
-              ? 'Registrati'
-              : 'Accedi'}
+          {submitting ? azioneInCorso : azione}
         </button>
       </form>
 

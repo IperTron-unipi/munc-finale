@@ -2,16 +2,15 @@ import { Link } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { totale, BONUS_MIN, LIVELLO_MAX } from '../../lib/games'
 
-// Schermata di fine partita. Ci si arriva senza navigare: il vincitore
-// scrive `status: 'finished'`, l'onSnapshot lo rimanda a tutti e `Game.jsx`
-// cambia vista su ogni dispositivo insieme.
+// Schermata di fine partita. Props { gameId, partita, giocatori } — vedi
+// Game.jsx. Ci si arriva senza navigare: il vincitore scrive
+// `status: 'finished'` e l'onSnapshot cambia vista su ogni dispositivo.
 function Finished({ gameId, partita, giocatori }) {
   const { user } = useAuth()
   const hoVinto = partita.winnerUid === user.uid
 
-  // Qui si ordina per livello, mentre il tabellone resta in ordine
-  // d'ingresso: lì riordinare farebbe scappare le righe sotto il dito.
-  // La copia serve perché `sort` ordina sul posto lo snapshot.
+  // A parità di livello decide la forza. La copia serve perché `sort`
+  // ordinerebbe sul posto l'array dello snapshot.
   const classifica = [...giocatori].sort(
     (a, b) => b.level - a.level || totale(b) - totale(a),
   )

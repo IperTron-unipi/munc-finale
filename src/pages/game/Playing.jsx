@@ -1,5 +1,9 @@
 import { useState } from 'react'
 import { useAuth } from '../../context/AuthContext'
+import Combattimento from '../../components/Combattimento'
+import Dado from '../../components/Dado'
+import Errore from '../../components/Errore'
+import Passo from '../../components/Passo'
 import {
   cambiaBonus,
   cambiaCombattente,
@@ -13,6 +17,12 @@ import {
   LIVELLO_MIN,
 } from '../../lib/games'
 
+// Il tabellone a partita in corso: livello, bonus, combattente e vittoria.
+//
+// Props (le stesse per Lobby e Finished, le passa Game.jsx)
+//   gameId    string
+//   partita   partita     vedi lib/games.js
+//   giocatori giocatore[] con `uid`, in ordine d'ingresso
 function Playing({ gameId, partita, giocatori }) {
   const { user } = useAuth()
   const [error, setError] = useState(null)
@@ -26,35 +36,32 @@ function Playing({ gameId, partita, giocatori }) {
   const mioLivello = io.level
   const mioBonus = io.bonus ?? BONUS_MIN
 
-  // Nessun `submitting`: Firestore aggiorna prima la copia locale, quindi
-  // il numero cambia al tocco. Se la scrittura fallisce lo snapshot torna
-  // indietro da solo, e qui resta da mostrare il perché.
-  function mostraErrore(err) {
-    setError(messaggioErroreGioco(err.code))
+  // (promessa: Promise) -> void. Nessun `submitting`: Firestore aggiorna prima
+  // la copia locale, quindi il numero cambia al tocco. Se la scrittura fallisce
+  // lo snapshot torna indietro da solo, e qui resta da mostrare il perché.
+  function esegui(promessa) {
+    setError(null)
+    promessa.catch((err) => setError(messaggioErroreGioco(err.code)))
   }
 
   function modificaLivello(delta) {
     const nuovo = mioLivello + delta
     if (nuovo < LIVELLO_MIN || nuovo > LIVELLO_MAX) return
-    setError(null)
-    cambiaLivello(gameId, user.uid, nuovo).catch(mostraErrore)
+    esegui(cambiaLivello(gameId, user.uid, nuovo))
   }
 
   function modificaBonus(delta) {
     const nuovo = mioBonus + delta
     if (nuovo < BONUS_MIN || nuovo > BONUS_MAX) return
-    setError(null)
-    cambiaBonus(gameId, user.uid, nuovo).catch(mostraErrore)
+    esegui(cambiaBonus(gameId, user.uid, nuovo))
   }
 
   function modificaCombattente(event) {
-    setError(null)
-    cambiaCombattente(gameId, user.uid, event.target.checked).catch(mostraErrore)
+    esegui(cambiaCombattente(gameId, user.uid, event.target.checked))
   }
 
   function confermaVittoria() {
-    setError(null)
-    dichiaraVittoria(gameId, user.uid, io.name).catch(mostraErrore)
+    esegui(dichiaraVittoria(gameId, user.uid, io.name))
   }
 
   // Un "no" riporta il livello a 9: a 10 la domanda ricomparirebbe subito.
@@ -65,16 +72,15 @@ function Playing({ gameId, partita, giocatori }) {
 
   return (
     <section className="colonna">
-      <h1>Partita in corso</h1>
+      <h1 className="con-dado">
+        Partita in corso
+        <Dado />
+      </h1>
       <p className="stato">
         Codice <strong>{gameId}</strong> — si vince a livello {LIVELLO_MAX}.
       </p>
 
-      {error && (
-        <p className="errore" role="alert">
-          {error}
-        </p>
-      )}
+      <Errore messaggio={error} />
 
       {/* La domanda compare e sparisce col livello, non con un click. */}
       {mioLivello === LIVELLO_MAX && (
@@ -109,6 +115,14 @@ function Playing({ gameId, partita, giocatori }) {
         </div>
       )}
 
+      <Combattimento
+        gameId={gameId}
+        hostUid={partita.hostUid}
+        giocatori={giocatori}
+      />
+
+      <h2>Tabellone</h2>
+
       {/* Ordine d'ingresso, come in lobby: ordinare per livello farebbe
           saltare le righe sotto il dito mentre si preme il +. */}
       <ul className="tabellone">
@@ -131,8 +145,7 @@ function Playing({ gameId, partita, giocatori }) {
               </span>
 
               {/* Livello e forza pesano uguale: il primo fa vincere la
-                  partita, la seconda i combattimenti. Il bonus si legge, ma
-                  è solo l'addendo che porta dall'uno all'altra. */}
+                  partita, la seconda i combattimenti. */}
               <span className="statistiche">
                 <span className="valore">
                   <span className="etichetta">Livello</span>
@@ -150,45 +163,21 @@ function Playing({ gameId, partita, giocatori }) {
 
               {sonoIo && (
                 <span className="comandi">
-                  <span className="gruppo">
-                    <span className="etichetta">Livello</span>
-                    <button
-                      type="button"
-                      onClick={() => modificaLivello(-1)}
-                      disabled={mioLivello <= LIVELLO_MIN}
-                      aria-label="Scendi di un livello"
-                    >
-                      −
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => modificaLivello(+1)}
-                      disabled={mioLivello >= LIVELLO_MAX}
-                      aria-label="Sali di un livello"
-                    >
-                      +
-                    </button>
-                  </span>
+                  <Passo
+                    etichetta="Livello"
+                    valore={mioLivello}
+                    min={LIVELLO_MIN}
+                    max={LIVELLO_MAX}
+                    onCambia={modificaLivello}
+                  />
 
-                  <span className="gruppo">
-                    <span className="etichetta">Bonus</span>
-                    <button
-                      type="button"
-                      onClick={() => modificaBonus(-1)}
-                      disabled={mioBonus <= BONUS_MIN}
-                      aria-label="Togli un bonus"
-                    >
-                      −
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => modificaBonus(+1)}
-                      disabled={mioBonus >= BONUS_MAX}
-                      aria-label="Aggiungi un bonus"
-                    >
-                      +
-                    </button>
-                  </span>
+                  <Passo
+                    etichetta="Bonus"
+                    valore={mioBonus}
+                    min={BONUS_MIN}
+                    max={BONUS_MAX}
+                    onCambia={modificaBonus}
+                  />
 
                   <label htmlFor="combattente">
                     <input
@@ -208,11 +197,10 @@ function Playing({ gameId, partita, giocatori }) {
 
       <h2>Come si legge</h2>
       <p className="nota">
-        Il livello fa vincere la partita: si arriva a {LIVELLO_MAX}. Il bonus
-        viene dagli oggetti e non fa salire di livello. Livello più bonus
-        danno la forza, che serve a battere i mostri. Combattente vale +1 in
-        combattimento e vince i pareggi: l'app lo segna, i conti li fate al
-        tavolo.
+        Il livello fa vincere la partita: si arriva a {LIVELLO_MAX}. Livello più bonus
+        danno la forza, che serve a battere i mostri. Combattente non aggiunge
+        punti: serve a vincere i pareggi, e nello scontro l'app ne tiene conto
+        da sola.
       </p>
     </section>
   )

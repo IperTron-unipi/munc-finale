@@ -1,34 +1,30 @@
 import { useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import {
-  unisciti,
-  messaggioErroreGioco,
-  LUNGHEZZA_NOME_MAX,
-} from '../lib/games'
+import { useInvio } from '../hooks/useInvio'
+import Errore from '../components/Errore'
+import { unisciti, LUNGHEZZA_NOME_MAX } from '../lib/games'
 import {
   normalizzaCodice,
   codiceValido,
   LUNGHEZZA_CODICE,
 } from '../lib/gameCode'
 
+// Entra in una partita esistente col codice. Nessuna prop: legge `?codice=`
+// dalla query, così chi arriva da /game/XXXXXX trova il campo già compilato.
 function JoinGame() {
   const { user } = useAuth()
   const navigate = useNavigate()
 
-  // Chi arriva da /game/XXXXXX senza essere in partita trova il campo
-  // già compilato.
   const [parametri] = useSearchParams()
   const [codice, setCodice] = useState(() =>
     normalizzaCodice(parametri.get('codice') ?? ''),
-  )                                         // già normalizzato: vedi onChange
+  )                                         // sempre normalizzato: vedi onChange
   const [nome, setNome] = useState('')
-  const [error, setError] = useState(null)
-  const [submitting, setSubmitting] = useState(false)
+  const { error, setError, submitting, invia } = useInvio()
 
-  async function handleSubmit(event) {
+  function handleSubmit(event) {
     event.preventDefault()
-    setError(null)
 
     if (!codiceValido(codice)) {
       setError(`Il codice è di ${LUNGHEZZA_CODICE} caratteri. Controllalo e riprova.`)
@@ -41,14 +37,10 @@ function JoinGame() {
       return
     }
 
-    setSubmitting(true)
-    try {
+    invia(async () => {
       await unisciti(codice, user.uid, nomePulito)
       navigate(`/game/${codice}`, { replace: true })
-    } catch (err) {
-      setError(messaggioErroreGioco(err.code))
-      setSubmitting(false)
-    }
+    })
   }
 
   return (
@@ -87,11 +79,7 @@ function JoinGame() {
           È il nome con cui ti vedono gli altri sul tabellone.
         </p>
 
-        {error && (
-          <p className="errore" role="alert">
-            {error}
-          </p>
-        )}
+        <Errore messaggio={error} />
 
         <button type="submit" disabled={submitting}>
           {submitting ? 'Entro nella partita…' : 'Unisciti a una partita'}

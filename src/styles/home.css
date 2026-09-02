@@ -1,7 +1,8 @@
 /* ---- Home: le due azioni principali ---- */
 
 /* Creare e unirsi sono l'unico motivo per cui si apre l'app: si toccano,
-   non si leggono. */
+   non si leggono. Fondo, cornice e transizione arrivano da `button`
+   in index.css: qui resta solo ciò per cui sono diverse. */
 .azione {
   /* Larghe quanto la carta: sovrascrive l'allineamento dei link di servizio. */
   align-self: stretch;
@@ -13,20 +14,4 @@
   font-weight: 700;
   text-align: center;
   text-decoration: none;
-
-  color: var(--pergamena);
-  background: var(--cuoio);
-  border: 1px solid var(--cuoio);
-  border-radius: var(--raggio);
-  transition: background-color 120ms ease-out, transform 120ms ease-out;
-}
-
-.azione:hover {
-  color: var(--pergamena);
-  background: #4b3623;
-}
-
-/* Stessa risposta al tocco dei bottoni: sono la stessa cosa per il dito. */
-.azione:active {
-  transform: translateY(1px);
 }

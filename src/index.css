@@ -79,6 +79,15 @@
   box-sizing: border-box;
 }
 
+/* Nessuna lista dell'app usa i pallini: il segno e il rientro se ne vanno
+   qui, e ai singoli elenchi resta il solo margine che li distingue. */
+ul,
+ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
 body {
   margin: 0;
   padding: 1rem 0.75rem 3rem;
@@ -182,6 +191,17 @@ input[type='checkbox'] {
 
 /* ---- Bottoni ---- */
 
+/* La livrea del cuoio. Le due azioni della home sono <a>, ma per il dito
+   sono la stessa cosa: la prendono da qui invece di ricopiarla. */
+button,
+.azione {
+  color: var(--pergamena);
+  background: var(--cuoio);
+  border: 1px solid var(--cuoio);
+  border-radius: var(--raggio);
+  transition: background-color 120ms ease-out, transform 120ms ease-out;
+}
+
 button {
   padding: 0.6rem 1.1rem;
   min-height: 44px;
@@ -196,22 +216,19 @@ button {
      minuscole e il 9 di "torno a 9" scende sotto la riga. */
   font-variant-numeric: lining-nums tabular-nums;
 
-  color: var(--pergamena);
-  background: var(--cuoio);
-  border: 1px solid var(--cuoio);
-  border-radius: var(--raggio);
   cursor: pointer;
-
-  transition: background-color 120ms ease-out, transform 120ms ease-out;
 }
 
-button:hover {
+button:hover,
+.azione:hover {
+  color: var(--pergamena);
   background: #4b3623;
 }
 
 /* L'unico movimento dell'app: il tocco deve rispondere anche quando il
    dito copre il bottone. */
-button:active {
+button:active,
+.azione:active {
   transform: translateY(1px);
 }
 

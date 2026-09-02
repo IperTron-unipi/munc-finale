@@ -1,0 +1,198 @@
+/* ---- Combattimento ----
+   Un pannello dentro la carta di Playing: mentre è aperto è la cosa che
+   conta, e sta sopra al tabellone. Le righe dei due lati riusano .valore e
+   .comandi del tabellone. */
+
+.combattimento {
+  margin: 1rem 0 0.4rem;
+  padding: 0 0.9rem 0.9rem;
+  background: rgb(59 42 26 / 0.05);
+  border: 1px solid var(--cuoio);
+  border-radius: var(--raggio);
+}
+
+/* Fascia scura attaccata al bordo, come il titolo della carta: il pannello
+   si riconosce con la coda dell'occhio. */
+.combattimento > h2 {
+  margin: 0 -0.9rem 0.8rem;
+  padding: 0.5rem 0.9rem 0.45rem;
+  color: var(--pergamena);
+  background: var(--cuoio);
+  border-bottom: 1px solid var(--oro);
+}
+
+.combattimento > .nota,
+.combattimento > .stato {
+  margin-top: 0.8rem;
+}
+
+.combattimento .chiudi {
+  margin-top: 1.1rem;
+}
+
+/* ---- Verdetto ---- */
+
+/* I due numeri sono il motivo per cui si guarda il telefono: stanno al
+   centro, grandi, e cambiano colore insieme all'esito. */
+.verdetto {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0.45rem;
+
+  margin: 0.8rem 0;
+  padding: 0.55rem 0.7rem;
+
+  font-size: var(--t-minore);
+  text-transform: uppercase;
+  letter-spacing: var(--sp-etichetta);
+
+  border: 1px solid;
+  border-radius: var(--raggio);
+}
+
+.verdetto em {
+  font-style: normal;
+  font-weight: 700;
+}
+
+.verdetto em::before {
+  content: '— ';
+}
+
+/* L'oro è già la vittoria altrove nell'app; il rosso Porta è già l'errore. */
+.verdetto.vinto {
+  color: var(--cuoio);
+  background: rgb(184 132 43 / 0.18);
+  border-color: var(--oro);
+}
+
+.verdetto.perso {
+  color: var(--sangue);
+  background: rgb(157 47 34 / 0.07);
+  border-color: var(--sangue);
+}
+
+/* ---- I due lati ---- */
+
+.lato {
+  margin-top: 1rem;
+}
+
+.lato h3 {
+  margin: 0 0 0.4rem;
+  font-size: var(--t-etichetta);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: var(--sp-sezione);
+  color: var(--cuoio-chiaro);
+}
+
+.schierati li,
+.mostri li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem 0.75rem;
+  padding: 0.45rem 0;
+  border-bottom: 1px solid var(--filo);
+}
+
+.schierati li:last-child,
+.mostri li:last-child {
+  border-bottom: none;
+}
+
+.schierati .nome,
+.mostri .nome {
+  flex: 1 1 7rem;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+/* I comandi vanno a capo sempre: nome e statistiche devono restare
+   leggibili anche su uno schermo stretto. */
+.schierati .comandi,
+.mostri .comandi {
+  flex: 1 1 100%;
+}
+
+/* Nel tabellone il bonus è sempre positivo e il "+" fra le colonne dice il
+   conto. In combattimento è un malus quanto un bonus, e il segno sta già nel
+   numero: due segni di fila leggerebbero "8 + −3". */
+.combattimento .valore.bonus::before {
+  content: none;
+}
+
+/* Il Combattente non entra in nessuna delle due colonne: il suo effetto si
+   vede solo a parità di forza, e va detto a parole sotto la lista. */
+.somma {
+  margin: 0.5rem 0 0;
+  font-size: var(--t-minore);
+  color: var(--cuoio-chiaro);
+}
+
+/* .comandi button del tabellone impone 44px e la gotica: qui dentro "Togli"
+   resta un link. */
+.combattimento .comandi button.link {
+  min-width: 0;
+  min-height: 0;
+  font-family: var(--testo);
+  font-size: var(--t-minore);
+}
+
+/* ---- Chi scende in campo ---- */
+
+.azioni {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0.6rem 0 0;
+}
+
+.azioni .stato {
+  margin: 0;
+  font-size: var(--t-minore);
+}
+
+/* ---- Nuovo mostro ---- */
+
+/* Due righe: il nome per intero sopra, sotto il livello da scegliere e il
+   bottone che chiude. Su una riga sola, con quattro comandi, il campo del
+   nome si riduceva a due parole. */
+.aggiungi {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.9rem;
+  padding-top: 0.8rem;
+  border-top: 1px solid var(--filo);
+}
+
+.aggiungi input[type='text'] {
+  flex: 1 1 100%;
+  min-width: 0;
+  margin-top: 0;
+}
+
+.aggiungi .comandi {
+  flex: 1 1 auto;
+}
+
+/* L'etichetta spinge i bottoni a destra, in colonna con "Aggiungi". */
+.aggiungi .gruppo {
+  width: 100%;
+}
+
+.aggiungi .gruppo .etichetta {
+  margin-right: auto;
+}
+
+/* La larghezza fissa tiene fermi i bottoni quando il livello passa da 9 a 10. */
+.aggiungi .gruppo strong {
+  min-width: 2.5ch;
+  text-align: center;
+}

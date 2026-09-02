@@ -6,18 +6,14 @@ import { useAuth } from '../context/AuthContext'
 function Home() {
   const { user } = useAuth()
 
-  // Dopo signOut non serve navigare: RequireAuth rimanda a /login da solo.
-  function esci() {
-    signOut(auth)
-  }
-
   return (
     <section className="colonna">
       <h1>Munchkin Tracker</h1>
 
       <p className="stato">
         Sei entrato come {user.email}.{' '}
-        <button type="button" className="link" onClick={esci}>
+        {/* Dopo signOut non serve navigare: RequireAuth rimanda a /login da solo. */}
+        <button type="button" className="link" onClick={() => signOut(auth)}>
           Esci
         </button>
       </p>

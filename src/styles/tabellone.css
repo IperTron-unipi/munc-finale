@@ -5,9 +5,7 @@
 
 .tabellone,
 .classifica {
-  list-style: none;
-  padding: 0;
-  margin: 0.5rem 0 0;
+  margin-top: 0.5rem;
 }
 
 /* Una riga per personaggio. Il wrap fa scendere i comandi sotto al nome
@@ -21,9 +19,11 @@
   border-bottom: 1px solid var(--filo);
 }
 
-/* La propria riga si deve trovare a colpo d'occhio in mezzo alle altre:
-   fra righe separate da un filo, è l'unica con un fondo e una cornice. */
-.giocatore.mio {
+/* La riga da trovare a colpo d'occhio in mezzo alle altre: la propria in
+   partita, quella del vincitore nella classifica finale. Fra righe separate
+   da un filo, sono le uniche con un fondo e una cornice. */
+.giocatore.mio,
+.classifica .vincitore {
   font-weight: 700;
   margin: 0.3rem 0;
   background: rgb(184 132 43 / 0.13);
@@ -62,11 +62,17 @@
   color: var(--cuoio-chiaro);
 }
 
-.valore strong {
+/* Il numero grande: le colonne del tabellone, i due totali del verdetto e il
+   livello del mostro che si sta aggiungendo. Il 700 arriva da `strong`. */
+.valore strong,
+.verdetto strong,
+.aggiungi .gruppo strong {
   font-family: var(--display);
   font-size: var(--t-dato);
-  font-weight: 700;
   line-height: 1;
+}
+
+.valore strong {
   color: var(--cuoio);
 }
 
@@ -92,7 +98,8 @@
 
 /* La scala dei dieci livelli, sotto ogni riga: il pieno è la strada fatta,
    le tacche che restano sono quelle che mancano alla vittoria. Il livello
-   arriva dalla proprietà --livello impostata sulla riga. */
+   arriva dalla proprietà --livello impostata sulla riga; --riempimento
+   cambia il colore del pieno, e la classifica lo fa dorato al vincitore. */
 .giocatore::after {
   content: '';
   flex: 0 0 100%;
@@ -107,7 +114,7 @@
     ),
     linear-gradient(
       90deg,
-      var(--cuoio) 0 calc(var(--livello, 0) * 10%),
+      var(--riempimento, var(--cuoio)) 0 calc(var(--livello, 0) * 10%),
       transparent 0
     );
 
