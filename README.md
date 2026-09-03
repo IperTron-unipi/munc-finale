@@ -175,16 +175,6 @@ Il codice come id significa che unirsi a una partita è un `getDoc` diretto: nes
 
 Tutte tranne `/login` stanno dietro `RequireAuth`. Il regolamento è un file in `public/`, non una route: si apre con un `<a>` e si legge anche senza aver fatto l'accesso.
 
-## Schermate
-
-_Da aggiungere: i PNG vanno messi in `docs/img/`, poi si toglie il commento qui sotto._
-
-<!--
-| sala d'attesa | board | vittoria |
-|---|---|---|
-| ![Sala d'attesa](docs/img/lobby.png) | ![Board](docs/img/board.png) | ![Vittoria](docs/img/vittoria.png) |
--->
-
 ## Stato del progetto
 
 | fase | |
@@ -215,6 +205,10 @@ _Da aggiungere: i PNG vanno messi in `docs/img/`, poi si toglie il commento qui 
 **Le due regole di cache dicono il contrario l'una dell'altra, ed è voluto.** I file in `/assets/` hanno l'hash nel nome, non possono diventare stantii, e si tengono per un anno senza rivalidare. `sw.js` ha il nome fisso e comanda tutta la cache: servirne una copia vecchia bloccherebbe ogni aggiornamento, quindi va in `no-cache`.
 
 **Le notifiche sono locali, non push.** Il piano gratuito di Firebase non include Cloud Functions, e una push FCM va inviata da un backend autenticato — mai dal client. Ogni giocatore ha già un listener sulla partita: quando lo stato passa a `finished`, il client mostra una notifica tramite il service worker. Arriva solo ad app aperta o in background, e su iOS solo se la PWA è installata dalla schermata Home. Il permesso si chiede con un bottone all'ingresso in partita, non all'apertura dell'app: un permesso negato non si può ritirare.
+
+## Uso dell'IA
+
+Ho usato l'IA soprattutto per il brainstorming e per la ricerca sulle best practice. Un caso concreto è stato capire come adattare a Firebase la versione precedente di questo progetto, che usava un backend Express con database locale, passando ad Authentication, Firestore e Hosting. Per il CSS ho scritto io lo stile di una prima parte del sito, poi ho chiesto all'IA di estenderlo con coerenza al resto delle pagine. È stata utile anche per riordinare il codice: quello che prima stava in un unico file grande è ora diviso nei tanti file ordinati descritti in [Struttura](#struttura).
 
 ---
 

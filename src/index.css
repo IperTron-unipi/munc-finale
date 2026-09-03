@@ -88,6 +88,17 @@ ol {
   padding: 0;
 }
 
+/* Niente barra di scorrimento visibile: lo scroll resta attivo, solo il
+   fregio del browser sparisce. */
+html {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+html::-webkit-scrollbar {
+  display: none;
+}
+
 body {
   margin: 0;
   padding: 1rem 0.75rem 3rem;
