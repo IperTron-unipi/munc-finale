@@ -6,6 +6,23 @@ Un giocatore crea la partita e condivide un codice di sei caratteri. Gli altri l
 
 **L'app è online su https://munchkin-esame.web.app** — si apre dal browser e si installa dal telefono.
 
+## Credenziali di prova
+
+Due account già registrati, per provare l'app senza crearne di nuovi:
+
+| email | password |
+|---|---|
+| `test@email.com` | `Password` |
+| `test2@email.com` | `Password` |
+
+Servono entrambi perché l'app è multiplayer: uno crea la partita, l'altro entra col codice. Vanno usati su due dispositivi diversi, oppure su due finestre — una normale e una in incognito — perché l'accesso è per browser e due schede della stessa finestra condividono la stessa sessione.
+
+Il giro completo è: dal primo account **Crea partita**, si sceglie il nome del personaggio e compare un codice di sei caratteri; dal secondo **Unisciti a una partita**, si digita quel codice e un altro nome; chi ha creato la partita preme **Inizia partita** e da lì i due tabelloni restano allineati da soli.
+
+L'app si apre già sul form di accesso: bastano email e password, non c'è nessun passaggio di registrazione da fare.
+
+Gli account stanno nel progetto Firebase `munchkin-esame`, lo stesso dell'app online, quindi valgono anche in locale col `.env` allegato alla consegna (vedi [Il file `.env`](#far-girare-il-progetto-in-locale)). Su un progetto Firebase proprio non esistono: si creano dallo stesso form, col collegamento **Registrati** sotto il bottone.
+
 ## Perché
 
 Le app esistenti per Munchkin sono segnapunti locali: un solo dispositivo che passa di mano in mano attorno al tavolo. Questa è multiplayer — ognuno tiene il proprio personaggio sul proprio telefono e vede quelli degli altri aggiornarsi da soli.
@@ -46,24 +63,30 @@ Serve Node 20 o superiore e un progetto Firebase.
 npm install
 ```
 
-**2. Configurazione Firebase**
+**2. Il file `.env`**
 
-`.env.schema` va copiato in `.env` e riempito con i valori del proprio progetto. Stanno in Console Firebase → Impostazioni progetto → Generali → Le tue app → Configurazione SDK.
+Il `.env` non sta nel repository, ed è l'unica cosa da procurarsi. Ci sono due strade, e la prima evita i passi 3 e 4.
+
+*Con il `.env` allegato alla consegna via email.* Va messo nella radice del progetto, accanto a `package.json`, e basta così. Punta al progetto `munchkin-esame`, lo stesso dell'app online: Authentication e Firestore sono già attivi, le regole già pubblicate, e valgono le [credenziali di prova](#credenziali-di-prova).
+
+*Con un progetto Firebase proprio.* `.env.schema` va copiato in `.env` e riempito con i valori del proprio progetto. Stanno in Console Firebase → Impostazioni progetto → Generali → Le tue app → Configurazione SDK.
 
 ```bash
 cp .env.schema .env
 ```
 
+Poi servono anche i passi 3 e 4, che su un progetto nuovo non sono fatti.
+
 Queste chiavi non sono segrete: finiscono nel bundle JavaScript e chiunque può leggerle. La sicurezza sta nelle Security Rules, non nel nasconderle. Il `.env` è in `.gitignore` solo per non riscriverle in giro.
 
-**3. Servizi da attivare in console**
+**3. Servizi da attivare in console** — solo con un progetto proprio
 
 - **Authentication** → provider Email/Password, e nient'altro
 - **Firestore Database** → modalità produzione, regione `eur3 (europe-west)`
 
 La regione non si cambia dopo: si può solo cancellare il database e rifarlo.
 
-**4. Security Rules**
+**4. Security Rules** — solo con un progetto proprio
 
 Firestore in modalità produzione blocca ogni lettura e scrittura finché le regole non vengono pubblicate. Il contenuto di `firestore.rules` va incollato in Console Firebase → Firestore Database → Regole → Pubblica, oppure pubblicato dalla CLI con `npm run deploy:rules` (vedi [Pubblicare](#pubblicare)).
 
